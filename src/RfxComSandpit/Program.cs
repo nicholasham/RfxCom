@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Concurrency;
-
-using System.Text;
-using System.Threading;
+using System.Reactive.Linq;
 using RfxCom;
+using RfxCom.Commands;
 using RfxCom.Events;
 using RfxCom.Messages;
 using RfxCom.Messages.Handlers;
 
 namespace RfxComSandpit
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
-            var serialPort = new SerialPort()
+            var serialPort = new SerialPort
             {
                 PortName = "COM3",
                 BaudRate = 38400,
@@ -36,22 +31,20 @@ namespace RfxComSandpit
             var transmitter = new Transmitter(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
 
 
+            transmitter.Initialize().Wait();
+            transmitter.Send(new SetModeCommand(Protocol.ByronSx)).Wait();
 
-           transmitter.Initialize().Wait();
-           transmitter.Enable(Protocol.ByronSx).Wait();
-            
             transmitter.Receive(TimeSpan.FromSeconds(1), ThreadPoolScheduler.Instance).TimeInterval()
-           .Subscribe(x =>
-           {
-               var result = x.Value;
-               if (!(result is ErrorEvent))
-                   consoleLogger.Info(" Success: " + result.ToString());
-               else
-                   consoleLogger.Error(" Exception: " + result.ToString());
-           });
+                .Subscribe(x =>
+                {
+                    var result = x.Value;
+                    if (!(result is ErrorEvent))
+                        consoleLogger.Info(" Success: " + result.ToString());
+                    else
+                        consoleLogger.Error(" Exception: " + result.ToString());
+                });
 
-            
-            
+
             Console.ReadLine();
         }
     }

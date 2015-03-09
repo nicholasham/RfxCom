@@ -1,13 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RfxCom.Messages
 {
     public static class ByteExtensions
     {
      
-        public static string Dump(this byte[] bytes)
+        public static string Dump(this IEnumerable<byte> bytes)
         {
-            return BitConverter.ToString(bytes);
+            return BitConverter.ToString(bytes.ToArray());
         }
 
         public static byte Next(this byte value)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using RfxCom.Commands;
 using RfxCom.Events;
 using RfxCom.Messages;
 using RfxCom.Messages.Handlers;
@@ -11,18 +12,7 @@ using RfxCom.Messages.Handlers;
 namespace RfxCom
 {
 
-    public class ReceiveContext
-    {
-        public ReceiveContext(IObserver<Event> observable, byte[] data)
-        {
-            Observable = observable;
-            Data = data;
-        }
-
-        public IObserver<Event> Observable { get; set; }
-        public byte[] Data { get; set; }
-    }
-
+  
     public class Transmitter : ITransmitter
     {
         public Transmitter(ICommunicationInterface communicationInterface, ILogger logger, IReceiveHandlerFactory handlerFactory)
@@ -83,65 +73,32 @@ namespace RfxCom
                 });
             }); 
         }
-        
-        public async Task SendGetStatus()
+
+        public async Task Send(Command command)
         {
-            await SendMessage(PacketType.InterfaceCommand, SubType.ModeCommand, Command.GetStatus,
-                Enumerable.Repeat<Byte>(0x00, 9).ToArray());
+           await CommunicationInterface.WriteAsync(command.ToBytes().ToArray());
+           Logger.Info("Sent: {0}", command.ToBytes().Dump());
+
         }
 
         public async Task Reset()
         {
-            await Send(new Reset());
+            await Send(new ResetCommand());
+            await Task.Delay(50);
         }
 
         public Task Flush()
         {
             return CommunicationInterface.FlushAsync();
         }
-
-        public async Task Enable(params Protocol[] protocols)
-        {
-            var messages = new byte[] { 0x53, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-            for (var number = 1; number <= 5; number++)
-            {
-
-                if (protocols.Any(x=> x.MessageNumber == number))
-                {
-                    var value = protocols
-                        .Where(protocol => protocol.MessageNumber == number)
-                        .Sum(protocol => protocol.Value);
-
-                    messages[number - 1] = Convert.ToByte(value);    
-                }
-                
-            }
-            
-            await SendMessage(PacketType.InterfaceCommand, SubType.ModeCommand, Command.SetMode , messages);
-
-        }
-
+       
         public async Task Initialize()
         {
             await Reset();
-            await Task.Delay(5000);
             await Flush();
-            await SendGetStatus();
-
+            await Send(new GetStatusCommand());
         }
-        
-        protected async Task SendMessage(PacketType type, SubType subType, Command command, params byte[] extra)
-        {
-            var sequenceNumber = NextSequenceNumber();
-            var byteCount = Convert.ToByte(extra.Length + 4);
-            var buffer = new[] {byteCount, type, subType, sequenceNumber, command};
-            buffer = buffer.Concat(extra).ToArray();
-            await CommunicationInterface.WriteAsync(buffer);
-
-            Logger.Info("Sent: {0}", buffer.Dump());
-        }
-
+       
         protected byte NextSequenceNumber()
         {
             return SequenceNumber = SequenceNumber.Next();

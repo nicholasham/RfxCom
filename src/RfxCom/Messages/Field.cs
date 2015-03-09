@@ -20,17 +20,22 @@ namespace RfxCom.Messages
             return field.Value;
         }
 
+        public bool IsEnabled(byte @byte)
+        {
+            return (@byte & Value) != 0;
+        }
+
         public override string ToString()
         {
             return string.Format("Id:'{0}', Description: '{1}' ", Value, Description);
         }
     }
 
-    public abstract class Field<T> :Field where T : class
+    public abstract class Field<T> :Field where T : Field
     {
         public static bool TryParse(byte value, out T field) 
         {
-            var fields = GetAll().Cast<Field<T>>();
+            var fields = List().Cast<Field<T>>();
 
             field = fields.FirstOrDefault(x => x.Value == value) as T;
 
@@ -54,7 +59,7 @@ namespace RfxCom.Messages
         {
         }
 
-        public static IEnumerable<T> GetAll()
+        public static IEnumerable<T> List()
         {
             var fields = (from property in typeof(T).GetRuntimeFields()
                 where property.FieldType == typeof(T)
@@ -62,5 +67,12 @@ namespace RfxCom.Messages
 
             return fields;
         }
+
+        public static IEnumerable<T> ListEnabled(byte value)
+        {
+            return List().Where(x=> x.IsEnabled(value));
+        }
+
+      
     }
 }

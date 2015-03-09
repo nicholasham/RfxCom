@@ -19,36 +19,15 @@ namespace RfxCom.Messages
     }
 
 
-    public class TransceiverType : Field<TransceiverType>
-    {
-        public static readonly TransceiverType Type1 = new TransceiverType(0x50, "310.00 MHZ");
-        public static readonly TransceiverType Type2 = new TransceiverType(0x51, "315.00 MHZ");
-        public static readonly TransceiverType Type3 = new TransceiverType(0x52, "433.92 MHZ Receiver Only");
-        public static readonly TransceiverType Type4 = new TransceiverType(0x53, "433.92 MHZ Transceiver");
-        public static readonly TransceiverType Type5 = new TransceiverType(0x54, "433.42 MHZ");
-        public static readonly TransceiverType Type6 = new TransceiverType(0x55, "868.00 MHZ");
-        public static readonly TransceiverType Type7 = new TransceiverType(0x56, "868.00 MHZ FSK");
-        public static readonly TransceiverType Type8 = new TransceiverType(0x57, "868.30 MHZ");
-        public static readonly TransceiverType Type9 = new TransceiverType(0x58, "868.30 MHZ FSK");
-        public static readonly TransceiverType Type10 = new TransceiverType(0x59, "868.35 MHZ");
-        public static readonly TransceiverType Type11 = new TransceiverType(0x5A, "868.35 MHZ FSK");
-        public static readonly TransceiverType Type12 = new TransceiverType(0x5B, "868.95 MHZ");
-        public static readonly TransceiverType Unknown = new TransceiverType(0xFF, "Unknown");
-
-        private TransceiverType(byte value, string description) : base(value, description)
-        {
-        }
-    }
-
     public class ResponseMessage : Message
     {
-        public ResponseMessage(byte packetLength, PacketType packetType, ResponseSubType subType, byte sequenceNumber, Command command, TransceiverType message1, Protocol[] protocols)
+        public ResponseMessage(byte packetLength, PacketType packetType, ResponseSubType subType, byte sequenceNumber, InterfaceCommandType commandType, TransceiverType message1, Protocol[] protocols)
         {
             PacketLength = packetLength;
             PacketType = packetType;
             SubType = subType;
             SequenceNumber = sequenceNumber;
-            Command = command;
+            CommandType = commandType;
             Message1 = message1;
             Protocols = protocols;
         }
@@ -57,7 +36,7 @@ namespace RfxCom.Messages
         public PacketType PacketType { get; set; }
         public ResponseSubType SubType { get; private set; }
         public byte SequenceNumber { get; private set; }
-        public Command Command { get; private set; }
+        public InterfaceCommandType CommandType { get; private set; }
         public TransceiverType Message1 { get; private set; }
         public Protocol[] Protocols { get; private set; }
         
@@ -69,7 +48,7 @@ namespace RfxCom.Messages
                 PacketType, 
                 SubType, 
                 SequenceNumber, 
-                Command, 
+                CommandType, 
                 Message1, 
             };
         }
@@ -93,14 +72,17 @@ namespace RfxCom.Messages
 
             var subType = ResponseSubType.Parse(bytes[2], ResponseSubType.WrongCommandReceived); ;
             var sequenceNumber = bytes[3];
-            var command = Command.Parse(bytes[4], Command.GetStatus);
-            var message1 = TransceiverType.Parse(bytes[5], TransceiverType.Unknown);
-            
-            // Protocols
-            var enabledProtocols = (from protocol in Protocol.GetAll()
-                let index = protocol.MessageNumber + 4
-                where protocol.IsEnabled(bytes[index])
-                select protocol).ToArray();
+            var command = InterfaceCommandType.Parse(bytes[4], InterfaceCommandType.GetStatus);
+            var message1 = TransceiverType.Parse(bytes[5], TransceiverType.Default);
+
+            var message3 = bytes[7];
+            var message4 = bytes[8];
+            var message5 = bytes[9];
+
+            var enabledProtocols1 = Protocol.ListEnabled(message3).Where(x => x.MessageNumber == 3);
+            var enabledProtocols2 = Protocol.ListEnabled(message4).Where(x => x.MessageNumber == 4);
+            var enabledProtocols3 = Protocol.ListEnabled(message5).Where(x => x.MessageNumber == 5);
+            var enabledProtocols = enabledProtocols1.Concat(enabledProtocols2).Concat(enabledProtocols3).ToArray();
             
             message = new ResponseMessage(packetLength, packetType, subType, sequenceNumber, command, message1, enabledProtocols);
 

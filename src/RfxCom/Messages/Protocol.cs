@@ -5,6 +5,8 @@ namespace RfxCom.Messages
 
     public class Protocol : Field<Protocol>
     {
+        
+
         public byte MessageNumber { get; private set; }
 
         public static Protocol AeBlyss = new Protocol(3, 0x01, "AE Blyss");
@@ -39,10 +41,7 @@ namespace RfxCom.Messages
             MessageNumber = messageNumber;
         }
         
-        public bool IsEnabled(byte @byte)
-        {
-            return (@byte & Value) != 0;
-        }
+        
 
         
     }
