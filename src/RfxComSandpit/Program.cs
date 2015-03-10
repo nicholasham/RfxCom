@@ -28,7 +28,7 @@ namespace RfxComSandpit
             var communicationInterface = new SerialPortInterface(serialPort);
 
             var consoleLogger = new ConsoleLogger();
-            var transmitter = new Transmitter(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
+            var transmitter = new Transceiver(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
 
 
             transmitter.Initialize().Wait();

@@ -3,6 +3,7 @@ using RfxCom.Messages;
 
 namespace RfxCom.Events
 {
+   
     public class MessageReceived : Event
     {
         public MessageReceived(Message message)

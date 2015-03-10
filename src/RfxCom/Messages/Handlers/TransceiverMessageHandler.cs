@@ -2,13 +2,14 @@
 
 namespace RfxCom.Messages.Handlers
 {
-    public class StatusMessageHandler : ReceiveHandler
+    public class TransceiverMessageHandler : ReceiveHandler
     {
         public override void Handle(ReceiveContext context)
         {
-            ResponseMessage message;
 
-            if (ResponseMessage.TryParse(context.Data, out message))
+            TransceiverMessage message;
+
+            if (TransceiverMessage.TryParse(context.Data, out message))
             {
                 context.Observable.OnNext(new MessageReceived(message));
             }
@@ -16,6 +17,7 @@ namespace RfxCom.Messages.Handlers
             {
                 InvokeNextHandler(context);
             }
+
         }
     }
 }

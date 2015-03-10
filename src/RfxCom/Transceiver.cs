@@ -11,11 +11,10 @@ using RfxCom.Messages.Handlers;
 
 namespace RfxCom
 {
-
-  
-    public class Transmitter : ITransmitter
+    public class Transceiver : ITransceiver
     {
-        public Transmitter(ICommunicationInterface communicationInterface, ILogger logger, IReceiveHandlerFactory handlerFactory)
+        public Transceiver(ICommunicationInterface communicationInterface, ILogger logger,
+            IReceiveHandlerFactory handlerFactory)
         {
             CommunicationInterface = communicationInterface;
             Logger = logger;
@@ -26,13 +25,11 @@ namespace RfxCom
         protected IReceiveHandlerFactory HandlerFactory { get; set; }
         protected ILogger Logger { get; private set; }
         protected ICommunicationInterface CommunicationInterface { get; private set; }
-        
+
         public IObservable<Event> Receive(TimeSpan interval, IScheduler scheduler)
         {
-             
             return Observable.Create<Event>(observer =>
             {
-
                 return scheduler.ScheduleAsync(async (ctrl, ct) =>
                 {
                     while (!ct.IsCancellationRequested)
@@ -52,7 +49,7 @@ namespace RfxCom
                                 data = await CommunicationInterface.ReadAsync();
                                 buffer.AddRange(data);
                             }
-                            
+
                             while (buffer.Count > 0)
                             {
                                 var count = buffer[0] + 1;
@@ -62,27 +59,33 @@ namespace RfxCom
                                 handler.Handle(context);
                                 buffer = buffer.Skip(count).ToList();
                             }
-                            
                         }
                         catch (Exception ex)
                         {
                             observer.OnNext(new ErrorEvent(ex));
                         }
+
                         await ctrl.Sleep(interval, ct);
                     }
                 });
-            }); 
+            });
         }
 
         public async Task Send(Command command)
         {
-           await CommunicationInterface.WriteAsync(command.ToBytes().ToArray());
-           Logger.Info("Sent: {0}", command.ToBytes().Dump());
-
+            const int sequenceNumberIndex = 3;
+            
+            var buffer = command.ToBytes().ToArray();
+            buffer[sequenceNumberIndex] = NextSequenceNumber();
+            
+            await CommunicationInterface.WriteAsync(buffer);
+            
+            Logger.Debug("Sent: {0}", buffer.Dump());
         }
 
         public async Task Reset()
         {
+            ResetSequenceNumber();
             await Send(new ResetCommand());
             await Task.Delay(50);
         }
@@ -91,24 +94,25 @@ namespace RfxCom
         {
             return CommunicationInterface.FlushAsync();
         }
-       
+
         public async Task Initialize()
         {
             await Reset();
             await Flush();
             await Send(new GetStatusCommand());
         }
-       
-        protected byte NextSequenceNumber()
+
+        protected byte ResetSequenceNumber()
         {
-            return SequenceNumber = SequenceNumber.Next();
+            SequenceNumber = byte.MinValue;
+            return SequenceNumber;
         }
 
-        protected async Task Send(Message message)
+        protected byte NextSequenceNumber()
         {
-            var buffer = message.ToBytes();
-            await CommunicationInterface.WriteAsync(buffer);
-            Logger.Info("Sent: {0}", message.ToBytes().Dump());
+            SequenceNumber = SequenceNumber == byte.MaxValue ? byte.MinValue : Convert.ToByte(SequenceNumber + 1);
+            return SequenceNumber;
         }
+
     }
 }

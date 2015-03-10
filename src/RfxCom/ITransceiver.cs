@@ -12,7 +12,7 @@ namespace RfxCom
 {
 
   
-    public interface ITransmitter
+    public interface ITransceiver
     {
         IObservable<Event> Receive(TimeSpan interval, IScheduler scheduler);
         Task Send(Command command);

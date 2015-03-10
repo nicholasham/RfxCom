@@ -3,9 +3,9 @@ using System.Diagnostics.Contracts;
 namespace RfxCom.Messages
 {
     
-    public class Chime : Message
+    public class ChimeMessage : Message
     {
-        public Chime(byte packetLength, PacketType packetType, ChimeSubType subType, byte sequenceNumber, byte id1, byte id2, ChimeSound sound, byte rssi)
+        public ChimeMessage(byte packetLength, PacketType packetType, ChimeSubType subType, byte sequenceNumber, byte id1, byte id2, ChimeSound sound, byte rssi)
         {
             PacketLength = packetLength;
             PacketType = packetType;
@@ -27,9 +27,9 @@ namespace RfxCom.Messages
         public byte Filler { get;  private set; }
         public byte Rssi { get;  private set; }
 
-        public static bool TryParse(byte[] bytes, out Chime chime)
+        public static bool TryParse(byte[] bytes, out ChimeMessage chimeMessage)
         {
-            chime = default(Chime);
+            chimeMessage = default(ChimeMessage);
 
             if (bytes.Length != 8)
             {
@@ -51,7 +51,7 @@ namespace RfxCom.Messages
             var sound = ChimeSound.Parse(bytes[6], ChimeSound.Unknown1);
             var rssi = bytes[7];
 
-            chime = new Chime(packetLength, packetType, subType, sequenceNumber, id1, id2, sound, rssi);
+            chimeMessage = new ChimeMessage(packetLength, packetType, subType, sequenceNumber, id1, id2, sound, rssi);
 
             return true;
 

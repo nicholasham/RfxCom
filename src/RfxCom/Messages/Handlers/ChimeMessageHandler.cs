@@ -2,16 +2,16 @@ using RfxCom.Events;
 
 namespace RfxCom.Messages.Handlers
 {
-    public class ChimeReceiveHandler : ReceiveHandler
+    public class ChimeMessageHandler : ReceiveHandler
     {
         public override void Handle(ReceiveContext context)
         {
 
-            Chime chime;
+            ChimeMessage message;
 
-            if (Chime.TryParse(context.Data, out chime))
+            if (ChimeMessage.TryParse(context.Data, out message))
             {
-                context.Observable.OnNext(new MessageReceived(chime));
+                context.Observable.OnNext(new MessageReceived(message));
             }
             else
             {

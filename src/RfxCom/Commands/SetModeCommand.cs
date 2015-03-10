@@ -13,6 +13,12 @@ namespace RfxCom.Commands
             Protocols = protocols;
         }
 
+        public SetModeCommand(TransceiverType transceiverType, params Protocol[] protocols)
+        {
+            TransceiverType = transceiverType;
+            Protocols = protocols;
+        }
+
         public TransceiverType TransceiverType { get; private set; }
         public Protocol[] Protocols { get; private set; }
 

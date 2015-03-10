@@ -12,14 +12,5 @@ namespace RfxCom.Messages
             return BitConverter.ToString(bytes.ToArray());
         }
 
-        public static byte Next(this byte value)
-        {
-            if (value == byte.MaxValue)
-            {
-                return 0;
-            }
-
-            return Convert.ToByte(value + 1);
-        }
     }
 }
