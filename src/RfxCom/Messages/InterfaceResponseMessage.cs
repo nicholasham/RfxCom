@@ -4,24 +4,24 @@ using System.Linq;
 
 namespace RfxCom.Messages
 {
-    public class InterfaceMessage : Message
+    public class InterfaceResponseMessage : Message
     {
-        public InterfaceMessage(byte packetLength, PacketType packetType, InterfaceMessageSubType subType, byte sequenceNumber, InterfaceCommandType commandType, TransceiverType transceiverType, Protocol[] protocols)
+        public InterfaceResponseMessage(byte packetLength, PacketType packetType, InterfaceResponseSubType subType, byte sequenceNumber, InterfaceControlCommand controlCommand, TransceiverType transceiverType, Protocol[] protocols)
         {
             PacketLength = packetLength;
             PacketType = packetType;
             SubType = subType;
             SequenceNumber = sequenceNumber;
-            CommandType = commandType;
+            ControlCommand = controlCommand;
             TransceiverType = transceiverType;
             Protocols = protocols;
         }
 
         public byte PacketLength { get; private set; }
         public PacketType PacketType { get; set; }
-        public InterfaceMessageSubType SubType { get; private set; }
+        public InterfaceResponseSubType SubType { get; private set; }
         public byte SequenceNumber { get; private set; }
-        public InterfaceCommandType CommandType { get; private set; }
+        public InterfaceControlCommand ControlCommand { get; private set; }
         public TransceiverType TransceiverType { get; private set; }
         public Protocol[] Protocols { get; private set; }
         
@@ -33,14 +33,14 @@ namespace RfxCom.Messages
                 PacketType, 
                 SubType, 
                 SequenceNumber, 
-                CommandType, 
+                ControlCommand, 
                 TransceiverType, 
             };
         }
 
-        public static bool TryParse(byte[] bytes, out InterfaceMessage message)
+        public static bool TryParse(byte[] bytes, out InterfaceResponseMessage message)
         {
-            message = default (InterfaceMessage);
+            message = default (InterfaceResponseMessage);
 
             if (bytes.Length != 14)
             {
@@ -55,9 +55,9 @@ namespace RfxCom.Messages
                 return false;
             }
 
-            var subType = InterfaceMessageSubType.Parse(bytes[2], InterfaceMessageSubType.WrongCommandReceived); ;
+            var subType = InterfaceResponseSubType.Parse(bytes[2], InterfaceResponseSubType.WrongCommandReceived); ;
             var sequenceNumber = bytes[3];
-            var command = InterfaceCommandType.Parse(bytes[4], InterfaceCommandType.GetStatus);
+            var command = InterfaceControlCommand.Parse(bytes[4], InterfaceControlCommand.GetStatus);
             var message1 = TransceiverType.Parse(bytes[5], TransceiverType.Default);
 
             var message3 = bytes[7];
@@ -69,7 +69,7 @@ namespace RfxCom.Messages
             var enabledProtocols3 = Protocol.ListEnabled(message5).Where(x => x.MessageNumber == 5);
             var enabledProtocols = enabledProtocols1.Concat(enabledProtocols2).Concat(enabledProtocols3).ToArray();
             
-            message = new InterfaceMessage(packetLength, packetType, subType, sequenceNumber, command, message1, enabledProtocols);
+            message = new InterfaceResponseMessage(packetLength, packetType, subType, sequenceNumber, command, message1, enabledProtocols);
 
             return true;
         }

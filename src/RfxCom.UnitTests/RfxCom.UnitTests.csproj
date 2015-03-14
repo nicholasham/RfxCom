@@ -55,10 +55,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommunicationInterfaceTests.cs" />
     <Compile Include="Messages\FieldTests.cs" />
+    <Compile Include="Messages\Handlers\ReceiveHandlerFactoryTests.cs" />
     <Compile Include="Messages\TestField.cs" />
     <Compile Include="Messages\TransceiverMessageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ByteCounterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

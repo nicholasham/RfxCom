@@ -1,11 +1,10 @@
 namespace RfxCom.Messages.Handlers
 {
-    public abstract class ReceiveHandler : IReceiveHandler
+    public abstract class ReceiveHandler : IChainedReceiveHandler
     {
-        public IReceiveHandler NextHandler { get; set; }
+        public IChainedReceiveHandler NextHandler { get; set; }
 
         public abstract void Handle(ReceiveContext context);
-
 
         protected void InvokeNextHandler(ReceiveContext context)
         {

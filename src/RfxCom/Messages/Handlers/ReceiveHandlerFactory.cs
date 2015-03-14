@@ -5,15 +5,15 @@ namespace RfxCom.Messages.Handlers
         public IReceiveHandler Create()
         {
             var transceiverMessageHandler = new TransceiverMessageHandler();
-            var interfaceMessageHandler = new InterfaceMessageHandler();
+            var interfaceResponseMessageHandler = new InterfaceResponseMessageHandler();
             var chimeMessageHandler = new ChimeMessageHandler();
             var unhandledMessageHandler = new UnhandledMessageHandler();
 
-            transceiverMessageHandler.NextHandler = interfaceMessageHandler;
-            interfaceMessageHandler.NextHandler = chimeMessageHandler;
+            transceiverMessageHandler.NextHandler = interfaceResponseMessageHandler;
+            interfaceResponseMessageHandler.NextHandler = chimeMessageHandler;
             chimeMessageHandler.NextHandler = unhandledMessageHandler;
-
-            return interfaceMessageHandler;
+            
+            return transceiverMessageHandler;
         }
     }
 }

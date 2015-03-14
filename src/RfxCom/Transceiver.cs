@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using RfxCom.Commands;
 using RfxCom.Events;
 using RfxCom.Messages;
 using RfxCom.Messages.Handlers;
 
 namespace RfxCom
 {
+   
+   
+
     public class Transceiver : ITransceiver
     {
         public Transceiver(ICommunicationInterface communicationInterface, ILogger logger,
@@ -19,9 +22,10 @@ namespace RfxCom
             CommunicationInterface = communicationInterface;
             Logger = logger;
             HandlerFactory = handlerFactory;
+            ByteCounter = new ByteCounter(0);
         }
 
-        protected byte SequenceNumber { get; set; }
+        protected ByteCounter ByteCounter { get; set; } 
         protected IReceiveHandlerFactory HandlerFactory { get; set; }
         protected ILogger Logger { get; private set; }
         protected ICommunicationInterface CommunicationInterface { get; private set; }
@@ -36,29 +40,10 @@ namespace RfxCom
                     {
                         try
                         {
-                            var buffer = new List<byte>();
-
-                            var data = await CommunicationInterface.ReadAsync();
-
-                            buffer.AddRange(data);
-
-                            var requiredBytes = buffer[0] + 1;
-
-                            while (buffer.Count < requiredBytes)
-                            {
-                                data = await CommunicationInterface.ReadAsync();
-                                buffer.AddRange(data);
-                            }
-
-                            while (buffer.Count > 0)
-                            {
-                                var count = buffer[0] + 1;
-                                var bytes = buffer.Take(count).ToArray();
-                                var context = new ReceiveContext(observer, bytes);
-                                var handler = HandlerFactory.Create();
-                                handler.Handle(context);
-                                buffer = buffer.Skip(count).ToList();
-                            }
+                            var bytes = await CommunicationInterface.ReadAsync(ct);
+                            var handler = HandlerFactory.Create();
+                            var context = new ReceiveContext(observer, bytes);
+                            handler.Handle(context);
                         }
                         catch (Exception ex)
                         {
@@ -71,23 +56,34 @@ namespace RfxCom
             });
         }
 
-        public async Task Send(Command command)
+        public async Task Send(Message message)
         {
             const int sequenceNumberIndex = 3;
-            
-            var buffer = command.ToBytes().ToArray();
-            buffer[sequenceNumberIndex] = NextSequenceNumber();
+
+            var buffer = message.ToBytes().ToArray();
+
+            var interfaceControlMessage = message as InterfaceControlMessage;
+
+            if (interfaceControlMessage != null && interfaceControlMessage.ControlCommand == InterfaceControlCommand.Reset)
+            {
+                buffer[sequenceNumberIndex] = 0;        
+            }
+            else
+            {
+                buffer[sequenceNumberIndex] = ByteCounter.Next();        
+            }
             
             await CommunicationInterface.WriteAsync(buffer);
-            
+
             Logger.Debug("Sent: {0}", buffer.Dump());
         }
 
         public async Task Reset()
         {
-            ResetSequenceNumber();
-            await Send(new ResetCommand());
-            await Task.Delay(50);
+            ByteCounter.Reset();
+            var message = new InterfaceControlMessage(InterfaceControlCommand.Reset);
+            await Send(message);
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public Task Flush()
@@ -99,20 +95,10 @@ namespace RfxCom
         {
             await Reset();
             await Flush();
-            await Send(new GetStatusCommand());
+            await this.GetStatus();
         }
 
-        protected byte ResetSequenceNumber()
-        {
-            SequenceNumber = byte.MinValue;
-            return SequenceNumber;
-        }
-
-        protected byte NextSequenceNumber()
-        {
-            SequenceNumber = SequenceNumber == byte.MaxValue ? byte.MinValue : Convert.ToByte(SequenceNumber + 1);
-            return SequenceNumber;
-        }
+       
 
     }
 }

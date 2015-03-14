@@ -5,16 +5,17 @@ namespace RfxCom.Messages
     
     public class ChimeMessage : Message
     {
-        public ChimeMessage(byte packetLength, PacketType packetType, ChimeSubType subType, byte sequenceNumber, byte id1, byte id2, ChimeSound sound, byte rssi)
+        public ChimeMessage(ChimeSubType subType, byte sequenceNumber, byte id1, byte id2, ChimeSound sound, byte rssi)
         {
-            PacketLength = packetLength;
-            PacketType = packetType;
+            PacketLength = PacketLengths.Chime;
+            PacketType = PacketType.Chime;
             SubType = subType;
             SequenceNumber = sequenceNumber;
             Id1 = id1;
             Id2 = id2;
             Sound = sound;
             Rssi = rssi;
+            Filler = 0x00;
         }
 
         public byte PacketLength { get;  private set; }
@@ -37,6 +38,12 @@ namespace RfxCom.Messages
             }
 
             var packetLength = bytes[0];
+
+            if (packetLength != PacketLengths.Chime)
+            {
+                return false;
+            }
+
             PacketType packetType;
             
             if (PacketType.TryParse(bytes[1], out packetType) && packetType != PacketType.Chime)
@@ -51,7 +58,7 @@ namespace RfxCom.Messages
             var sound = ChimeSound.Parse(bytes[6], ChimeSound.Unknown1);
             var rssi = bytes[7];
 
-            chimeMessage = new ChimeMessage(packetLength, packetType, subType, sequenceNumber, id1, id2, sound, rssi);
+            chimeMessage = new ChimeMessage(subType, sequenceNumber, id1, id2, sound, rssi);
 
             return true;
 

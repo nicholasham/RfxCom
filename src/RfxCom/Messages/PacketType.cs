@@ -12,16 +12,4 @@
         }
         
     }
-
-    public class SubType : Field<SubType>
-    {
-        public static SubType ModeCommand = new SubType(0x00, "Mode Command");
-        
-        internal SubType(byte value, string description) : base(value, description)
-        {
-        }
-    }
-
-   
-    
 }

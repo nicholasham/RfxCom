@@ -5,7 +5,6 @@ namespace RfxCom.Messages
 
     public class Protocol : Field<Protocol>
     {
-        
 
         public byte MessageNumber { get; private set; }
 
@@ -40,8 +39,6 @@ namespace RfxCom.Messages
         {
             MessageNumber = messageNumber;
         }
-        
-        
 
         
     }

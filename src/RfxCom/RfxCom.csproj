@@ -34,16 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\GetStatusCommand.cs" />
-    <Compile Include="Commands\InterfaceCommand.cs" />
-    <Compile Include="Commands\ResetCommand.cs" />
-    <Compile Include="Commands\SendMessageCommand.cs" />
-    <Compile Include="Commands\SetModeCommand.cs" />
     <Compile Include="Events\ErrorEvent.cs" />
+    <Compile Include="ISequenceNumberGenerator.cs" />
+    <Compile Include="Messages\Buffer.cs" />
     <Compile Include="Messages\ByteExtensions.cs" />
+    <Compile Include="Messages\ChimeCommandExtensions.cs" />
     <Compile Include="Messages\Handlers\TransceiverMessageHandler.cs" />
-    <Compile Include="Messages\InterfaceCommandType.cs" />
+    <Compile Include="Messages\InterfaceControlCommand.cs" />
     <Compile Include="Messages\ChimeMessage.cs" />
     <Compile Include="Events\IEvent.cs" />
     <Compile Include="Events\MessageReceived.cs" />
@@ -57,21 +54,25 @@
     <Compile Include="Messages\Handlers\ReceiveContext.cs" />
     <Compile Include="Messages\Handlers\ReceiveHandler.cs" />
     <Compile Include="Messages\Handlers\ReceiveHandlerFactory.cs" />
-    <Compile Include="Messages\Handlers\InterfaceMessageHandler.cs" />
+    <Compile Include="Messages\Handlers\InterfaceResponseMessageHandler.cs" />
     <Compile Include="Messages\Handlers\UnhandledMessageHandler.cs" />
+    <Compile Include="Messages\InterfaceControlExtensions.cs" />
     <Compile Include="Messages\InterfaceControlMessage.cs" />
-    <Compile Include="Messages\InterfaceMessageSubType.cs" />
+    <Compile Include="Messages\InterfaceResponseSubType.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\ChimeSound.cs" />
     <Compile Include="Messages\ChimeSubType.cs" />
+    <Compile Include="Messages\PacketLengths.cs" />
+    <Compile Include="Messages\PacketType.cs" />
     <Compile Include="Messages\RawMessage.cs" />
     <Compile Include="Messages\Reset.cs" />
-    <Compile Include="Messages\InterfaceMessage.cs" />
+    <Compile Include="Messages\InterfaceResponseMessage.cs" />
     <Compile Include="Messages\TransceiverType.cs" />
     <Compile Include="Messages\TransceiverMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messages\Protocol.cs" />
-    <Compile Include="Messages\SubType.cs" />
+    <Compile Include="Messages\InterfaceControlSubType.cs" />
+    <Compile Include="ByteCounter.cs" />
     <Compile Include="Transceiver.cs" />
   </ItemGroup>
   <ItemGroup>

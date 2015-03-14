@@ -3,7 +3,6 @@ using System.IO.Ports;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using RfxCom;
-using RfxCom.Commands;
 using RfxCom.Events;
 using RfxCom.Messages;
 using RfxCom.Messages.Handlers;
@@ -14,6 +13,11 @@ namespace RfxComSandpit
     {
         private static void Main(string[] args)
         {
+            foreach (var portName in SerialPort.GetPortNames())
+            {
+                Console.WriteLine(portName);
+            }
+
             var serialPort = new SerialPort
             {
                 PortName = "COM3",
@@ -25,27 +29,44 @@ namespace RfxComSandpit
 
             serialPort.Open();
 
-            var communicationInterface = new SerialPortInterface(serialPort);
+            var communicationInterface = new UsbInterface(serialPort);
 
             var consoleLogger = new ConsoleLogger();
             var transmitter = new Transceiver(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
 
 
-            transmitter.Initialize().Wait();
-            transmitter.Send(new SetModeCommand(Protocol.ByronSx)).Wait();
-
-            transmitter.Receive(TimeSpan.FromSeconds(1), ThreadPoolScheduler.Instance).TimeInterval()
+            transmitter.Receive(TimeSpan.FromMilliseconds(10), ThreadPoolScheduler.Instance).TimeInterval()
                 .Subscribe(x =>
                 {
                     var result = x.Value;
                     if (!(result is ErrorEvent))
-                        consoleLogger.Info(" Success: " + result.ToString());
+                        consoleLogger.Info(result.ToString());
                     else
-                        consoleLogger.Error(" Exception: " + result.ToString());
+                        consoleLogger.Error(result.ToString());
                 });
 
+            transmitter.Initialize().Wait();
+            transmitter.SetMode(Protocol.ByronSx).Wait();
 
-            Console.ReadLine();
+
+
+
+            while (true)
+            {
+
+                var result = Console.ReadKey();
+                if ((result.KeyChar == 'Y') || (result.KeyChar == 'y'))
+                {
+                    transmitter.SendChime(ChimeSubType.ByronSx, ChimeSound.Tubular3Notes).Wait();
+                }
+                else if ((result.KeyChar == 'Q'))
+                {
+                    Console.WriteLine("Quit");
+                    break;
+                }
+            }
+
+            
         }
     }
 }

@@ -2,13 +2,13 @@
 
 namespace RfxCom.Messages.Handlers
 {
-    public class InterfaceMessageHandler : ReceiveHandler
+    public class InterfaceResponseMessageHandler : ReceiveHandler
     {
         public override void Handle(ReceiveContext context)
         {
-            InterfaceMessage message;
+            InterfaceResponseMessage message;
 
-            if (InterfaceMessage.TryParse(context.Data, out message))
+            if (InterfaceResponseMessage.TryParse(context.Data, out message))
             {
                 context.Observable.OnNext(new MessageReceived(message));
             }
