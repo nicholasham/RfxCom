@@ -1,0 +1,21 @@
+{
+  "name": "RfxCom",
+  "version": "1.0.0",
+  "description": "RfxCom Transceiver Api",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "^3.8.11",
+    "gulp-msbuild": "^0.2.8",
+    "gulp-nuget": "^0.0.3",
+    "gulp-debug": "^2.0.1",
+    "gulp-dotnet-assembly-info": "^0.1.10",
+    "xmlpoke": "^0.1.9",
+    "yargs": "^3.5.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nicholas Hammond",
+  "license": "ISC"
+}
