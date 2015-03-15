@@ -30,17 +30,23 @@ namespace RfxCom.Windows.ChimeSample
                 var logger = new ConsoleLogger();
                 var transceiver = new Transceiver(communicationInterface, logger);
 
-                
-                transceiver.Receive().ObserveOn(TaskPoolScheduler.Default)
-                .Subscribe(@event =>
+                var observable = transceiver.Receive();
+                    
+                observable.Subscribe(@event =>
                 {
                     if (!(@event is ErrorEvent))
                         logger.Info(@event.ToString());
                     else
                         logger.Error(@event.ToString());
-
                     
                 });
+
+                observable.MessagesOf<ChimeMessage>().Subscribe(received =>
+                {
+                    logger.Info(received.ToString());
+                });
+
+                observable.Connect();
                 
                 transceiver.Initialize().Wait();
                 transceiver.SetMode(Protocol.ByronSx).Wait();

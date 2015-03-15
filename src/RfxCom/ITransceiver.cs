@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reactive.Concurrency;
+using System.Reactive.Subjects;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace RfxCom
 {
     public interface ITransceiver
     {
-        IObservable<Event> Receive();
+        IConnectableObservable<Event> Receive();
         Task Send(Message message);
         Task Reset();
         Task Flush();

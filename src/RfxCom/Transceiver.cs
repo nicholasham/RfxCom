@@ -39,7 +39,7 @@ namespace RfxCom
         protected ICommunicationInterface CommunicationInterface { get; private set; }
 
 
-        public IObservable<Event> Receive()
+        public IConnectableObservable<Event> Receive()
         {
             return Observable.Create<Event>(async (subject, cancellationToken) =>
             {
@@ -57,7 +57,8 @@ namespace RfxCom
                         subject.OnNext(new ErrorEvent(exception));
                     }
                 }
-            });
+            })
+            .Publish();
         }
         
         public async Task Send(Message message)
