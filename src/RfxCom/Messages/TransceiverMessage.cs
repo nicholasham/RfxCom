@@ -83,6 +83,10 @@ namespace RfxCom.Messages
 
             return true;
         }
-        
+
+        public override string ToString()
+        {
+            return String.Format("Type: {0}, Response: {1}", SubType.Description, Response.Description);
+        }
     }
 }

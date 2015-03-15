@@ -61,9 +61,9 @@ namespace RfxCom.Messages
 
         public static IEnumerable<T> List()
         {
-            var fields = (from property in typeof(T).GetRuntimeFields()
-                where property.FieldType == typeof(T)
-                select property.GetValue(null)).Cast<T>();
+            var fields = (from field in typeof(T).GetRuntimeFields()
+                where field.FieldType == typeof(T)
+                select field.GetValue(null)).Cast<T>();
 
             return fields;
         }

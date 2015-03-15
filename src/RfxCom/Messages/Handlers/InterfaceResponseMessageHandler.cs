@@ -10,7 +10,7 @@ namespace RfxCom.Messages.Handlers
 
             if (InterfaceResponseMessage.TryParse(context.Data, out message))
             {
-                context.Observable.OnNext(new MessageReceived(message));
+                context.Observable.OnNext(new MessageReceived<InterfaceResponseMessage>(message));
             }
             else
             {

@@ -4,18 +4,18 @@ using RfxCom.Messages;
 namespace RfxCom.Events
 {
    
-    public class MessageReceived : Event
+    public class MessageReceived<T> : Event where T: Message
     {
-        public MessageReceived(Message message)
+        public MessageReceived(T message)
         {
             Message = message;
         }
 
-        public Message Message { get;  private set; }
+        public T Message { get;  private set; }
 
         public override string ToString()
         {
-            return string.Format("Message Received - {0}", Message.ToString());
+            return string.Format("Message Received ({0}) - {1}", Message.GetType().Name, Message);
         }
     }
 }

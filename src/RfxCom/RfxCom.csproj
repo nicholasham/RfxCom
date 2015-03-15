@@ -34,6 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CommunicationInterface.cs" />
+    <Compile Include="Disposable.cs" />
     <Compile Include="Events\ErrorEvent.cs" />
     <Compile Include="ISequenceNumberGenerator.cs" />
     <Compile Include="Messages\Buffer.cs" />

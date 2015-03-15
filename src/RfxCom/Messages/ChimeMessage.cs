@@ -55,7 +55,7 @@ namespace RfxCom.Messages
             var sequenceNumber = bytes[3];
             var id1 = bytes[4];
             var id2 = bytes[5];
-            var sound = ChimeSound.Parse(bytes[6], ChimeSound.Unknown1);
+            var sound = ChimeSound.Parse(bytes[6], ChimeSound.TubularMix);
             var rssi = bytes[7];
 
             chimeMessage = new ChimeMessage(subType, sequenceNumber, id1, id2, sound, rssi);
@@ -66,7 +66,7 @@ namespace RfxCom.Messages
 
         public override string ToString()
         {
-            return string.Format("Chime {0} with sound {1} ", SubType.Description, Sound.Description);
+            return string.Format("Type: {0}, Sound: {1} ", SubType.Description, Sound.Description);
         }
 
         public override byte[] ToBytes()

@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
+using System.Media;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using RfxCom;
 using RfxCom.Events;
 using RfxCom.Messages;
 using RfxCom.Messages.Handlers;
+using RfxCom.Windows;
 
 namespace RfxComSandpit
 {
@@ -13,23 +18,8 @@ namespace RfxComSandpit
     {
         private static void Main(string[] args)
         {
-            foreach (var portName in SerialPort.GetPortNames())
-            {
-                Console.WriteLine(portName);
-            }
-
-            var serialPort = new SerialPort
-            {
-                PortName = "COM3",
-                BaudRate = 38400,
-                DataBits = 8,
-                StopBits = StopBits.One,
-                Parity = Parity.None
-            };
-
-            serialPort.Open();
-
-            var communicationInterface = new UsbInterface(serialPort);
+            
+            var communicationInterface = new UsbInterface("COM3");
 
             var consoleLogger = new ConsoleLogger();
             var transmitter = new Transceiver(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
@@ -48,16 +38,40 @@ namespace RfxComSandpit
             transmitter.Initialize().Wait();
             transmitter.SetMode(Protocol.ByronSx).Wait();
 
-
-
-
+            
+            var soundMap = new Dictionary<ConsoleKey, ChimeSound>
+            {
+                {ConsoleKey.D0, ChimeSound.BigBen},
+                {ConsoleKey.D1, ChimeSound.Clarinet},
+                {ConsoleKey.D2, ChimeSound.Solo},
+                {ConsoleKey.D3, ChimeSound.Tubular2Notes},
+                {ConsoleKey.D4, ChimeSound.Tubular3Notes},
+                {ConsoleKey.D5, ChimeSound.TubularMix},
+                {ConsoleKey.D6, ChimeSound.Saxophone},
+                {ConsoleKey.D7, ChimeSound.MorningDew}
+            };
+            
             while (true)
             {
 
                 var result = Console.ReadKey();
-                if ((result.KeyChar == 'Y') || (result.KeyChar == 'y'))
+
+                
+                if (soundMap.ContainsKey(result.Key))
                 {
-                    transmitter.SendChime(ChimeSubType.ByronSx, ChimeSound.Tubular3Notes).Wait();
+                    var sound = soundMap[result.Key];
+
+                    consoleLogger.Info("Playing {0} ", sound);
+
+                    var soundFileName = sound.Description.Replace(" ", string.Empty);
+                    var soundFilePath = string.Format(@"C:\dev\GitHub\Sounds\{0}.wav", soundFileName);
+                    
+                    SoundPlayer player = new SoundPlayer(soundFilePath);
+                    
+                    player.Play();
+
+                    transmitter.SendChime(ChimeSubType.ByronSx, sound).Wait();
+                    
                 }
                 else if ((result.KeyChar == 'Q'))
                 {

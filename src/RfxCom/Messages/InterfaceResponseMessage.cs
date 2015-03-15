@@ -6,7 +6,7 @@ namespace RfxCom.Messages
 {
     public class InterfaceResponseMessage : Message
     {
-        public InterfaceResponseMessage(byte packetLength, PacketType packetType, InterfaceResponseSubType subType, byte sequenceNumber, InterfaceControlCommand controlCommand, TransceiverType transceiverType, Protocol[] protocols)
+        public InterfaceResponseMessage(byte packetLength, PacketType packetType, InterfaceResponseSubType subType, byte sequenceNumber, InterfaceControlCommand controlCommand, TransceiverType transceiverType, byte version, Protocol[] protocols)
         {
             PacketLength = packetLength;
             PacketType = packetType;
@@ -14,6 +14,7 @@ namespace RfxCom.Messages
             SequenceNumber = sequenceNumber;
             ControlCommand = controlCommand;
             TransceiverType = transceiverType;
+            Version = version;
             Protocols = protocols;
         }
 
@@ -23,6 +24,7 @@ namespace RfxCom.Messages
         public byte SequenceNumber { get; private set; }
         public InterfaceControlCommand ControlCommand { get; private set; }
         public TransceiverType TransceiverType { get; private set; }
+        public byte Version { get; private set; }
         public Protocol[] Protocols { get; private set; }
         
         public override byte[] ToBytes()
@@ -59,7 +61,7 @@ namespace RfxCom.Messages
             var sequenceNumber = bytes[3];
             var command = InterfaceControlCommand.Parse(bytes[4], InterfaceControlCommand.GetStatus);
             var message1 = TransceiverType.Parse(bytes[5], TransceiverType.Default);
-
+            var message2 = bytes[6];
             var message3 = bytes[7];
             var message4 = bytes[8];
             var message5 = bytes[9];
@@ -69,7 +71,7 @@ namespace RfxCom.Messages
             var enabledProtocols3 = Protocol.ListEnabled(message5).Where(x => x.MessageNumber == 5);
             var enabledProtocols = enabledProtocols1.Concat(enabledProtocols2).Concat(enabledProtocols3).ToArray();
             
-            message = new InterfaceResponseMessage(packetLength, packetType, subType, sequenceNumber, command, message1, enabledProtocols);
+            message = new InterfaceResponseMessage(packetLength, packetType, subType, sequenceNumber, command, message1, message2, enabledProtocols);
 
             return true;
         }
@@ -77,7 +79,7 @@ namespace RfxCom.Messages
         public override string ToString()
         {
             var protocols = string.Join(",", Protocols.Select(x => x.Description));
-            return String.Format("Frequency: {0}, Enabled Protocols: {1}", TransceiverType.Description, protocols);
+            return String.Format("Firmware Version: {0}, Frequency: {1}, Enabled Protocols: {2}",Version, TransceiverType.Description, protocols);
         }
     }
 }

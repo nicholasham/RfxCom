@@ -12,17 +12,24 @@ using RfxCom.Messages.Handlers;
 namespace RfxCom
 {
    
-   
-
     public class Transceiver : ITransceiver
     {
-        public Transceiver(ICommunicationInterface communicationInterface, ILogger logger,
-            IReceiveHandlerFactory handlerFactory)
+        private Transceiver()
+        {
+            ByteCounter = new ByteCounter(0);
+        }
+
+        public Transceiver(ICommunicationInterface communicationInterface, ILogger logger) : this(communicationInterface, logger, new ReceiveHandlerFactory())
+        {
+            CommunicationInterface = communicationInterface;
+            Logger = logger;
+        }
+
+        public Transceiver(ICommunicationInterface communicationInterface, ILogger logger, IReceiveHandlerFactory handlerFactory) : this()
         {
             CommunicationInterface = communicationInterface;
             Logger = logger;
             HandlerFactory = handlerFactory;
-            ByteCounter = new ByteCounter(0);
         }
 
         protected ByteCounter ByteCounter { get; set; } 
@@ -34,48 +41,38 @@ namespace RfxCom
         {
             return Observable.Create<Event>(observer =>
             {
-                return scheduler.ScheduleAsync(async (ctrl, ct) =>
+                return scheduler.ScheduleAsync(async (workScheduler, cancellationToken) =>
                 {
-                    while (!ct.IsCancellationRequested)
+                    while (!cancellationToken.IsCancellationRequested)
                     {
                         try
                         {
-                            var bytes = await CommunicationInterface.ReadAsync(ct);
+                            var bytes = await CommunicationInterface.ReadAsync(cancellationToken);
                             var handler = HandlerFactory.Create();
                             var context = new ReceiveContext(observer, bytes);
                             handler.Handle(context);
                         }
-                        catch (Exception ex)
+                        catch (Exception exception)
                         {
-                            observer.OnNext(new ErrorEvent(ex));
+                            observer.OnNext(new ErrorEvent(exception));
                         }
 
-                        await ctrl.Sleep(interval, ct);
+                        await workScheduler.Sleep(interval, cancellationToken);
                     }
                 });
             });
         }
-
+       
         public async Task Send(Message message)
         {
             const int sequenceNumberIndex = 3;
 
             var buffer = message.ToBytes().ToArray();
-
-            var interfaceControlMessage = message as InterfaceControlMessage;
-
-            if (interfaceControlMessage != null && interfaceControlMessage.ControlCommand == InterfaceControlCommand.Reset)
-            {
-                buffer[sequenceNumberIndex] = 0;        
-            }
-            else
-            {
-                buffer[sequenceNumberIndex] = ByteCounter.Next();        
-            }
+            buffer[sequenceNumberIndex] = ByteCounter.Next();       
             
             await CommunicationInterface.WriteAsync(buffer);
 
-            Logger.Debug("Sent: {0}", buffer.Dump());
+            Logger.Info("Message Sent ({0}) - {1}", message.GetType().Name, message);
         }
 
         public async Task Reset()

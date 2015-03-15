@@ -15,7 +15,7 @@ namespace RfxCom.Messages.Handlers
 
             if (ChimeMessage.TryParse(context.Data, out message))
             {
-                context.Observable.OnNext(new MessageReceived(message));
+                context.Observable.OnNext(new MessageReceived<ChimeMessage>(message));
             }
             else
             {

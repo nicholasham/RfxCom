@@ -50,5 +50,10 @@ namespace RfxCom.Messages
             .Concat(Messages)
             .ToArray();
         }
+
+        public override string ToString()
+        {
+            return string.Format("Command: {0}, Raw: {1} ", ControlCommand.Description, ToBytes().Dump());
+        }
     }
 }

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxComSandpit", "RfxComSand
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxCom.UnitTests", "RfxCom.UnitTests\RfxCom.UnitTests.csproj", "{A415A9E4-69A8-46C9-8A03-8C4B51F94A74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxCom.Windows", "RfxCom.Windows\RfxCom.Windows.csproj", "{60AC43BA-A6E6-4F5D-BBE1-E9B3F694CF6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxCom.Windows.ChimeSample", "RfxCom.Windows.ChimeSample\RfxCom.Windows.ChimeSample.csproj", "{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{A415A9E4-69A8-46C9-8A03-8C4B51F94A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A415A9E4-69A8-46C9-8A03-8C4B51F94A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A415A9E4-69A8-46C9-8A03-8C4B51F94A74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60AC43BA-A6E6-4F5D-BBE1-E9B3F694CF6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60AC43BA-A6E6-4F5D-BBE1-E9B3F694CF6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60AC43BA-A6E6-4F5D-BBE1-E9B3F694CF6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60AC43BA-A6E6-4F5D-BBE1-E9B3F694CF6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

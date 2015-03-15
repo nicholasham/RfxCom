@@ -11,7 +11,7 @@ namespace RfxCom.Messages.Handlers
 
             if (TransceiverMessage.TryParse(context.Data, out message))
             {
-                context.Observable.OnNext(new MessageReceived(message));
+                context.Observable.OnNext(new MessageReceived<TransceiverMessage>(message));
             }
             else
             {
