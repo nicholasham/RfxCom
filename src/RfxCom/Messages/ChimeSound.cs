@@ -8,7 +8,7 @@ namespace RfxCom.Messages
         public static ChimeSound BigBen = new ChimeSound(0x03, "Big Ben");
         public static ChimeSound Clarinet = new ChimeSound(0x0E, "Clarinet Rise");
 
-        public static ChimeSound Tubular2Notes = new ChimeSound(0x05, " Tubular 2 Notes");
+        public static ChimeSound Tubular2Notes = new ChimeSound(0x05, "Tubular 2 Notes");
         public static ChimeSound Saxophone = new ChimeSound(0x06, "Saxophone Rise");
         
         public static ChimeSound Solo = new ChimeSound(0x09, "Solo");

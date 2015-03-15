@@ -64,6 +64,7 @@
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\ChimeSound.cs" />
     <Compile Include="Messages\ChimeSubType.cs" />
+    <Compile Include="Messages\ObservableExtensions.cs" />
     <Compile Include="Messages\PacketLengths.cs" />
     <Compile Include="Messages\PacketType.cs" />
     <Compile Include="Messages\RawMessage.cs" />

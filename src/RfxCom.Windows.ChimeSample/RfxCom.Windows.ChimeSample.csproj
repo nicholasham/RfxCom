@@ -71,6 +71,16 @@
       <Name>RfxCom</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sounds\BigBen.wav" />
+    <EmbeddedResource Include="Sounds\ClarinetRise.wav" />
+    <EmbeddedResource Include="Sounds\MorningDew.wav" />
+    <EmbeddedResource Include="Sounds\SaxophoneRise.wav" />
+    <EmbeddedResource Include="Sounds\Solo.wav" />
+    <EmbeddedResource Include="Sounds\Tubular2Notes.wav" />
+    <EmbeddedResource Include="Sounds\Tubular3Notes.wav" />
+    <EmbeddedResource Include="Sounds\TubularMix.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
