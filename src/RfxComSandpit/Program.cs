@@ -25,14 +25,15 @@ namespace RfxComSandpit
             var transmitter = new Transceiver(communicationInterface, consoleLogger, new ReceiveHandlerFactory());
 
 
-            transmitter.Receive(TimeSpan.FromMilliseconds(10), ThreadPoolScheduler.Instance).TimeInterval()
-                .Subscribe(x =>
+            transmitter.Receive()
+                .ObserveOn(TaskPoolScheduler.Default)
+                .Subscribe(@event =>
                 {
-                    var result = x.Value;
-                    if (!(result is ErrorEvent))
-                        consoleLogger.Info(result.ToString());
+                    
+                    if (!(@event is ErrorEvent))
+                        consoleLogger.Info(@event.ToString());
                     else
-                        consoleLogger.Error(result.ToString());
+                        consoleLogger.Error(@event.ToString());
                 });
 
             transmitter.Initialize().Wait();

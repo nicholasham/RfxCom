@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using RfxCom.Events;
@@ -37,32 +38,28 @@ namespace RfxCom
         protected ILogger Logger { get; private set; }
         protected ICommunicationInterface CommunicationInterface { get; private set; }
 
-        public IObservable<Event> Receive(TimeSpan interval, IScheduler scheduler)
-        {
-            return Observable.Create<Event>(observer =>
-            {
-                return scheduler.ScheduleAsync(async (workScheduler, cancellationToken) =>
-                {
-                    while (!cancellationToken.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            var bytes = await CommunicationInterface.ReadAsync(cancellationToken);
-                            var handler = HandlerFactory.Create();
-                            var context = new ReceiveContext(observer, bytes);
-                            handler.Handle(context);
-                        }
-                        catch (Exception exception)
-                        {
-                            observer.OnNext(new ErrorEvent(exception));
-                        }
 
-                        await workScheduler.Sleep(interval, cancellationToken);
+        public IObservable<Event> Receive()
+        {
+            return Observable.Create<Event>(async (subject, cancellationToken) =>
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var bytes = await CommunicationInterface.ReadAsync(cancellationToken);
+                        var handler = HandlerFactory.Create();
+                        var context = new ReceiveContext(subject, bytes);
+                        handler.Handle(context);
                     }
-                });
+                    catch (Exception exception)
+                    {
+                        subject.OnNext(new ErrorEvent(exception));
+                    }
+                }
             });
         }
-       
+        
         public async Task Send(Message message)
         {
             const int sequenceNumberIndex = 3;

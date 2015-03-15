@@ -10,6 +10,7 @@ namespace RfxCom.Windows.ChimeSample
 {
     public static class ObservableExtensions
     {
+        
         public static IObservable<MessageReceived<T>> MessagesOf<T>(this IObservable<Event> observable) where T : Message
         {
             return
@@ -22,23 +23,25 @@ namespace RfxCom.Windows.ChimeSample
     {
         private static void Main(string[] args)
         {
+    
+            
             using (var communicationInterface = new UsbInterface("COM3"))
             {
                 var logger = new ConsoleLogger();
                 var transceiver = new Transceiver(communicationInterface, logger);
 
-
-                transceiver.Receive(TimeSpan.FromMilliseconds(10), ThreadPoolScheduler.Instance).TimeInterval()
-                .Subscribe(x =>
+                
+                transceiver.Receive().ObserveOn(TaskPoolScheduler.Default)
+                .Subscribe(@event =>
                 {
-                    var result = x.Value;
-                    if (!(result is ErrorEvent))
-                        logger.Info(result.ToString());
+                    if (!(@event is ErrorEvent))
+                        logger.Info(@event.ToString());
                     else
-                        logger.Error(result.ToString());
+                        logger.Error(@event.ToString());
+
+                    
                 });
-
-
+                
                 transceiver.Initialize().Wait();
                 transceiver.SetMode(Protocol.ByronSx).Wait();
                 
@@ -47,8 +50,11 @@ namespace RfxCom.Windows.ChimeSample
             }
         }
 
-        private static void Handle(IEnumerable<ChimeMessage> chimeMessages)
+        private static void Handle(MessageReceived<ChimeMessage> messageReceived)
         {
+                
         }
+
+        
     }
 }

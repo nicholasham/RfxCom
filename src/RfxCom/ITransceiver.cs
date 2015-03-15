@@ -11,7 +11,7 @@ namespace RfxCom
 {
     public interface ITransceiver
     {
-        IObservable<Event> Receive(TimeSpan interval, IScheduler scheduler);
+        IObservable<Event> Receive();
         Task Send(Message message);
         Task Reset();
         Task Flush();
