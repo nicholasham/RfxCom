@@ -1,7 +1,23 @@
 var gulp = require('gulp'),
+    path = require('path'),
 	msbuild = require('gulp-msbuild'),
 	args = require('yargs').argv,
     assemblyInfo = require('gulp-dotnet-assembly-info');
+
+var build = {};
+    build.configuration = 'Release';
+    build.number = process.env.BUILD_NUMBER ? process.env.BUILD_NUMBER : 0 ;
+    build.version = '1.0.0.' + build.number;
+
+var solution = {};
+    solution.directory = '/src/';
+    solution.file = path.join(solution.directory, '*.sln');
+    solution.packagesDirectory = path.join(solution.directory, 'packages');
+
+
+var nuget = {};
+    nuget.directory = path.join(solution.directory, '.nuget');
+    nuget.file = path.join(nuget.directory, 'NuGet.exe'); 
 
 
 // Return a stream so gulp can determine completion
@@ -13,6 +29,9 @@ gulp.task('clean', function() {
 
 
 gulp.task('configuration', function(){
+    process.stdout.write(JSON.stringify(build));
+    process.stdout.write(JSON.stringify(solution));
+    process.stdout.write(JSON.stringify(nuget));
 
 });
 
