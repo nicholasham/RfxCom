@@ -60,6 +60,7 @@
     <Compile Include="CommunicationInterfaceTests.cs" />
     <Compile Include="Messages\FieldTests.cs" />
     <Compile Include="Messages\Handlers\ReceiveHandlerFactoryTests.cs" />
+    <Compile Include="Messages\InterfaceResponseMessageTests.cs" />
     <Compile Include="Messages\TestField.cs" />
     <Compile Include="Messages\TransceiverMessageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

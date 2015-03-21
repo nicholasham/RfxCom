@@ -44,23 +44,48 @@ namespace RfxCom.Messages
         {
             message = default (InterfaceResponseMessage);
 
-            if (bytes.Length != 14)
+            if (bytes.Length != PacketLengths.InterfaceResponse + 1)
             {
                 return false;
             }
 
             var packetLength = bytes[0];
-            PacketType packetType;
 
-            if (PacketType.TryParse(bytes[1], out packetType) && packetType != PacketType.InterfaceMessage)
+            if (packetLength != PacketLengths.InterfaceResponse)
             {
                 return false;
             }
 
-            var subType = InterfaceResponseSubType.Parse(bytes[2], InterfaceResponseSubType.WrongCommandReceived); ;
+            PacketType packetType;
+
+            if (!PacketType.TryParse(bytes[1], out packetType) && packetType != PacketType.InterfaceMessage)
+            {
+                return false;
+            }
+
+            InterfaceResponseSubType subType;
+
+            if (!InterfaceResponseSubType.TryParse(bytes[2], out subType))
+            {
+                return false;
+            }
+
             var sequenceNumber = bytes[3];
-            var command = InterfaceControlCommand.Parse(bytes[4], InterfaceControlCommand.GetStatus);
-            var message1 = TransceiverType.Parse(bytes[5], TransceiverType.Default);
+            
+            InterfaceControlCommand command;
+            
+            if (!InterfaceControlCommand.TryParse(bytes[4], out command))
+            {
+                return false;
+            }
+
+            TransceiverType message1;
+
+            if (!TransceiverType.TryParse(bytes[5], out message1))
+            {
+                return false;
+            }
+
             var message2 = bytes[6];
             var message3 = bytes[7];
             var message4 = bytes[8];

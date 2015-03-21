@@ -1,8 +1,10 @@
+
+
 var gulp = require('gulp'),
     path = require('path'),
 	msbuild = require('gulp-msbuild'),
-	args = require('yargs').argv,
     assemblyInfo = require('gulp-dotnet-assembly-info');
+
 
 var build = {};
     build.configuration = 'Release';
@@ -48,6 +50,8 @@ gulp.task('build', ['configuration'], function() {
             properties: {clp:'ErrorsOnly'}
         }));
 });
+
+
 
 gulp.task('default', ['build']);
 
