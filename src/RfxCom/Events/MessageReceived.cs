@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RfxCom.Messages;
+﻿using RfxCom.Messages;
 
 namespace RfxCom.Events
 {

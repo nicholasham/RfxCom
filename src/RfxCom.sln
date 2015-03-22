@@ -11,6 +11,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxCom.Windows", "RfxCom.Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RfxCom.Windows.ChimeSample", "RfxCom.Windows.ChimeSample\RfxCom.Windows.ChimeSample.csproj", "{97618BE5-A1ED-4CE7-9C18-7849A24BCC95}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{144E6B19-BCF2-4E9D-8288-F04A4C2713DA}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{210D4AA8-057D-49A8-AE14-5874B2CCF4C3}"
+	ProjectSection(SolutionItems) = preProject
+		..\gulpfile.js = ..\gulpfile.js
+		..\package.json = ..\package.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
