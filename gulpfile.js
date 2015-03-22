@@ -27,10 +27,10 @@ paths.nugetConfigFile = path.join(paths.nugetDirectory, 'NuGet.config');
 paths.projectLicenceUrl = '';
 
 
-var build = {};
-build.configuration = 'Release';
-build.number = process.env.BUILD_NUMBER || 0;
-build.version = '1.0.0.' + build.number;
+var buildinfo = {};
+buildinfo.configuration = 'Release';
+buildinfo.number = process.env.BUILD_NUMBER || 0;
+buildinfo.version = '1.0.0.' + buildinfo.number;
 
 var nuget = new Nuget({
     nugetPath: paths.nugetExeFile,
@@ -77,7 +77,7 @@ gulp.task('nuget-pack', ['nuget-restore', 'build', 'test'], function () {
         requireLicenseAcceptance: false,
         releaseNotes: '',
         copyright: 'Copyright (2015)',
-        configuration: build.configuration
+        configuration: buildinfo.configuration
     };
 
 
@@ -103,7 +103,7 @@ gulp.task('nuget-pack', ['nuget-restore', 'build', 'test'], function () {
             nuget.pack({
                 spec: projectFile,
                 outputDirectory: paths.artifactsDirectory,
-                version: build.version,
+                version: buildinfo.version,
                 symbols: true,
                 includeReferencedProjects: true,
                 properties: nuspecProperties
@@ -122,7 +122,7 @@ gulp.task('xunit-test', ['build'], function () {
         throw new Error('XUnit console is not installed, Please install package xunit.runner.console using nuget');
     }
 
-    var unitTestsPath = path.join(path.join('**/bin', build.configuration), '*UnitTests*.dll');
+    var unitTestsPath = path.join(path.join('**/bin', buildinfo.configuration), '*UnitTests*.dll');
 
     return gulp.src([unitTestsPath], {
             read: false
@@ -134,24 +134,41 @@ gulp.task('xunit-test', ['build'], function () {
 
 gulp.task('test', ['xunit-test']);
 
-gulp.task('build', ['nuget-restore'], function () {
-    return gulp
-        .src('**/*.sln')
-        .pipe(msbuild({
-            configuration: build.configuration,
-            toolsVersion: 12.0,
-            targets: ['Clean', 'Build'],
-            errorOnFail: true,
-            stdout: true,
-            verbosity: 'quiet',
-            properties: {
-                clp: 'ErrorsOnly'
-            }
-        }));
+gulp.task('assemblyInfo', function () {
+
+
+    var replacements = {
+        configuration: buildinfo.configuration,
+        copyright: 'Copyright 2015',
+        version: buildinfo.version,
+        fileVersion: buildinfo.version,
+    };
+
+    gulp.src('**/AssemblyInfo.cs')
+        .pipe(assemblyInfo(replacements))
+        .pipe(gulp.dest('.'));
 });
 
+gulp.task('build', ['assemblyInfo', 'nuget-restore'], function () {
+
+    var options = {
+        configuration: buildinfo.configuration,
+        toolsVersion: 12.0,
+        targets: ['Clean', 'Build'],
+        errorOnFail: true,
+        stdout: true,
+        verbosity: 'quiet',
+        properties: {
+            clp: 'ErrorsOnly'
+        }
+    };
+
+    return gulp
+        .src('**/*.sln')
+        .pipe(msbuild(options));
+});
 
 
 gulp.task('default', ['clean', 'build', 'test', 'package']);
 
-gulp.task('ci', []);
+gulp.task('ci', ['clean', 'build', 'test', 'package']);
