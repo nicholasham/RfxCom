@@ -6,8 +6,8 @@ namespace RfxCom
 {
     public interface ICommunicationInterface
     {
-        Task SendAsync(Byte[] bytes, CancellationToken cancellationToken);
+        Task Send(Packet packet, CancellationToken cancellationToken);
 
-        IObservable<byte[]> Receive(CancellationToken cancellationToken);
+        IObservable<Packet> Receive(CancellationToken cancellationToken);
     }
 }

@@ -4,6 +4,7 @@ namespace RfxCom.Messages
 {
     public interface IMessageEncoder
     {
-        Option<byte[]> Encode(IMessage message);
+        bool CanEncode(IMessage message);
+        Option<Packet> Encode(IMessage message);
     }
 }

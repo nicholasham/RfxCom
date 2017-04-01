@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using LanguageExt;
-
-namespace RfxCom.Messages
+﻿namespace RfxCom.Messages
 {
     public interface IMessage
     {
         PacketType PacketType { get; }
+        byte SequenceNumber { get; }
+
     }
 }

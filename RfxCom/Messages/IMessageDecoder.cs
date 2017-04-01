@@ -4,6 +4,7 @@ namespace RfxCom.Messages
 {
     public interface IMessageDecoder
     {
-        Option<IMessage> Decode(byte[] data);
+        bool CanDecode(Packet packet);
+        Option<IMessage> Decode(Packet packet);
     }
 }

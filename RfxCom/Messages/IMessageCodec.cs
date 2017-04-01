@@ -1,6 +1,11 @@
-﻿namespace RfxCom.Messages
+﻿using LanguageExt;
+
+namespace RfxCom.Messages
 {
-    public interface IMessageCodec : IMessageEncoder, IMessageDecoder
+    public interface IMessageCodec
     {
+        Option<Packet> Encode(IMessage message);
+        Option<IMessage> Decode(Packet packet);
+
     }
 }

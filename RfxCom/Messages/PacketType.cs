@@ -1,11 +1,12 @@
 namespace RfxCom.Messages
 {
-    public enum PacketType
+    public enum PacketType : byte
     {
-        InterfaceCommand = 0x00,
-        InterfaceMessage = 0x01,
+        InterfaceControl = 0x00,
+        InterfaceResponse = 0x01,
         TransceiverMessage = 0x02,
-        Chime = 0x16
+        Chime = 0x16,
+        Unknown = 0xff
     }
     
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using RfxCom.Messages;
 
@@ -6,7 +7,7 @@ namespace RfxCom
 {
     public interface ITransceiver
     {
-        IObservable<IMessage> Receive();
-        Task Send(IMessage message);
+        IObservable<IMessage> Receive(CancellationToken cancellationToken);
+        Task Send(IMessage message, CancellationToken cancellationToken);
     }
 }
