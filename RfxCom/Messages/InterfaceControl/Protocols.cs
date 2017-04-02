@@ -56,5 +56,20 @@ namespace RfxCom.Messages.InterfaceControl
         {
             return (byte)protocols.Select(Message5Protocols.TryGetValue).Somes().Sum(x => x);
         }
+
+        public static Protocol[] DecodeMessage3(byte value)
+        {
+            return Message3Protocols.Where(pair => (pair.Value & value) != 0).Select(pair => pair.Key).ToArray();
+        }
+
+        public static Protocol[] DecodeMessage4(byte value)
+        {
+            return Message4Protocols.Where(pair => (pair.Value & value) != 0).Select(pair => pair.Key).ToArray();
+        }
+
+        public static Protocol[] DecodeMessage5(byte value)
+        {
+            return Message5Protocols.Where(pair => (pair.Value & value) != 0).Select(pair => pair.Key).ToArray();
+        }
     }
 }

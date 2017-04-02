@@ -7,6 +7,7 @@ using FluentAssertions;
 using RfxCom.Messages;
 using RfxCom.Messages.Chimes;
 using RfxCom.Messages.InterfaceControl;
+using RfxCom.Messages.InterfaceResponse;
 using Xunit;
 
 namespace RfxCom.UnitTests
@@ -50,10 +51,8 @@ namespace RfxCom.UnitTests
             return new[]
             {
                 Array("07 16 00 01 02 03 0E 05", new ByronSxChimeMessage(1, 770, ChimeSound.Clarinet, 5)),
-                Array("07 16 00 01 02 03 03 05", new ByronSxChimeMessage(1, 146, ChimeSound.BigBen, 8))
-                //new object[] { "07 16 01 01 02 03 0E", new RawMessage((PacketType) 0x16, 0x1, 0x1, new byte []{ 0x02, 0x03, 0x0E})},
-                //new object[] { "0D 00 00 01 02 00 00 00 00 00 00 00 00 00" , new GetStatusMessage(1)},
-                //new object[] { "0D 00 00 00 00 00 00 00 00 00 00 00 00 00", new ResetMessage(), }
+                Array("07 16 00 01 02 03 03 05", new ByronSxChimeMessage(1, 146, ChimeSound.BigBen, 8)),
+                Array("0D 01 00 00 03 53 00 80 08 27 00 00 00 00", new SetModeResponseMessage(0, TransceiverType.RfxTrx43392,Protocol.EnableDisplayOfUndecoded,Protocol.LaCrosse, Protocol.OregonScientific, Protocol.Ac, Protocol.Arc, Protocol.X10 ))
             };
         }
 
@@ -69,7 +68,7 @@ namespace RfxCom.UnitTests
 
         [Theory]
         [MemberData(nameof(ReceivedMessages))]
-        public async Task ShouldReceiveKnownMessagesCorrectly(string byteString, IMessage expectedMessage)
+        public async Task ShouldReceiveMessagesCorrectly(string byteString, IMessage expectedMessage)
         {
             IMessage actualMessage = null;
 
