@@ -4,7 +4,7 @@ using LanguageExt;
 
 namespace RfxCom.Messages.InterfaceControl
 {
-    public static class ProtocolsExtensions
+    public static class Protocols
     {
         private static IDictionary<Protocol, byte> Message3Protocols => new Dictionary<Protocol, byte>
         {
