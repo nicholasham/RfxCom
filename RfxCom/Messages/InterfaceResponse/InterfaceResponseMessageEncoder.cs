@@ -4,19 +4,9 @@ using RfxCom.Messages.InterfaceControl;
 
 namespace RfxCom.Messages.InterfaceResponse
 {
-    public enum InterfaceResponseSubType : byte
-    {
-        ModeCommandResponse = 0x00,
-        UnknownRtsRemote = 0x01,
-        NoExtendedHardware = 0x02,
-        ListRfyRemotes = 0x03,
-        WrongCommandReceived = 0xFF
-    }
-
     public class InterfaceResponseMessageEncoder : IMessageDecoder
     {
         protected const byte NotUsed = 0x00;
-
 
         public bool CanDecode(Packet packet)
         {
@@ -27,10 +17,26 @@ namespace RfxCom.Messages.InterfaceResponse
         {
             var subType = (InterfaceResponseSubType) packet.SubType;
 
-            if (subType == InterfaceResponseSubType.ModeCommandResponse)
-                return DecodeModeCommandResponse(packet);
+            switch (subType)
+            {
+                case InterfaceResponseSubType.ModeCommandResponse:
+                    return DecodeModeCommandResponse(packet);
+                case InterfaceResponseSubType.UnknownRtsRemote:
+                    return new UnknownRtsRemoteMessage(packet.SequenceNumber);
+                case InterfaceResponseSubType.NoExtendedHardware:
+                    return new NoExtendedHardwarePresent(packet.SequenceNumber);
+                case InterfaceResponseSubType.ListRfyRemotes:
+                    return DecodeListRfyRemotesMessage(packet);
+                case InterfaceResponseSubType.WrongCommandReceived:
+                    return new WrongCommandReceivedMessage(packet.SequenceNumber);
+            }
 
             return Option<IMessage>.None;
+        }
+
+        private static ListRfyRemotesMessage DecodeListRfyRemotesMessage(Packet packet)
+        {
+            return new ListRfyRemotesMessage(packet.SequenceNumber, packet.Data[0], packet.Data[1], packet.Data[2], packet.Data[3], packet.Data[4]);
         }
 
         private static Option<IMessage> DecodeModeCommandResponse(Packet packet)

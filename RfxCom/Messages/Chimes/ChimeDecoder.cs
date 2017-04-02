@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using LanguageExt;
 using RfxCom.Messages;
 using RfxCom.Messages.Chimes;

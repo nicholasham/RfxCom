@@ -38,17 +38,17 @@ namespace RfxCom.Messages
 
         private IEnumerable<T> Get<T>()
         {
-            Func<Type, bool> IsConcrete<T>()
+            Func<TypeInfo, bool> IsConcrete<T>()
             {
-                return type => typeof(T).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract &&
-                               type.GetTypeInfo().IsClass;
+                return type => typeof(T).GetTypeInfo().IsAssignableFrom(type) && !type.IsAbstract &&
+                               type.IsClass;
             }
 
             return GetType()
                 .GetTypeInfo()
-                .Assembly.GetTypes()
+                .Assembly.DefinedTypes
                 .Where(IsConcrete<T>())
-                .Select(Activator.CreateInstance)
+                .Select(type => Activator.CreateInstance(type.AsType()))
                 .Cast<T>()
                 .ToArray();
         }

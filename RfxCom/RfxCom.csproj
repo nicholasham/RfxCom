@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="2.0.38-beta" />
+    <PackageReference Include="SerialPortStream" Version="2.1.0" />
   </ItemGroup>
 
 </Project>
