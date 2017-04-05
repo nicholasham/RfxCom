@@ -13,5 +13,10 @@ namespace RfxCom.Messages.InterfaceResponse
         public TransceiverType TransceiverType { get; }
 
         public Protocol[] Protocols { get; }
+
+        public override string ToString()
+        {
+            return $"SetModeResponseMessage-  Sequence: {SequenceNumber}, TransceiverType: {TransceiverType},Protocols: {string.Join(",", Protocols)}";
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace RfxCom.Messages
         public byte SequenceNumber { get; }
 
         public byte[] Data { get; }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }
