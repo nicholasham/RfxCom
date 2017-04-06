@@ -38,9 +38,9 @@ namespace RfxCom.Messages
 
         private IEnumerable<T> Get<T>()
         {
-            Func<TypeInfo, bool> IsConcrete<T>()
+            Func<TypeInfo, bool> IsConcrete<TClass>()
             {
-                return type => typeof(T).GetTypeInfo().IsAssignableFrom(type) && !type.IsAbstract &&
+                return type => typeof(TClass).GetTypeInfo().IsAssignableFrom(type) && !type.IsAbstract &&
                                type.IsClass;
             }
 

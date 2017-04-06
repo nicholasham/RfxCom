@@ -12,27 +12,24 @@ namespace RfxCom
 {
    
 
-    public class UsbInterface : ICommunicationInterface
+    public class UsbDevice : ICommunicationDevice
     {
         private readonly SerialPortStream _stream;
 
-        public UsbInterface(string portName)
+        public UsbDevice(string portName)
         {
             _stream = new SerialPortStream(portName, 38400, 8, Parity.None, StopBits.One);
             _stream.Open();
         }
 
-        public Task Send(Packet packet, CancellationToken cancellationToken)
+        public Task SendAsync(Packet packet, CancellationToken cancellationToken)
         {
             return _stream.WriteAsync(packet, 0, packet.Length + 1, cancellationToken);
         }
 
-        public IObservable<Packet> Receive(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Packet>> ReceiveAsync(CancellationToken cancellationToken)
         {
-            return Observable.FromAsync(token => ReadAsync(cancellationToken))
-                .SelectMany(packet => packet)
-                .Publish()
-                .RefCount();
+            return  await ReadAsync(cancellationToken);
         }
 
         private async Task<Option<Packet>> ReadAsync(CancellationToken cancellationToken)
@@ -49,21 +46,25 @@ namespace RfxCom
 
         private async Task<byte[]> ReadBuffer(int length, CancellationToken cancellationToken)
         {
-            var packetBuffer = new byte[length];
+            var buffer = new byte[length];
             var totalBytesRemaining = length;
             var totalBytesRead = 0;
 
-            while (totalBytesRemaining != 0)
+            while (totalBytesRemaining != 0 && !cancellationToken.IsCancellationRequested)
             {
-                var bytesRead = await _stream.ReadAsync(packetBuffer, totalBytesRead, totalBytesRemaining, cancellationToken);
+                var bytesRead = await _stream.ReadAsync(buffer, totalBytesRead, totalBytesRemaining, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 totalBytesRead += bytesRead;
                 totalBytesRemaining -= bytesRead;
             }
 
-            return packetBuffer;
+            return buffer;
         }
 
-        
+
+        public void Dispose()
+        {
+            _stream?.Dispose();
+        }
     }
 }

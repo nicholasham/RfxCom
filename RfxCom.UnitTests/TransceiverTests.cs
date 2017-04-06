@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,18 +10,20 @@ using RfxCom.Messages.Chimes;
 using RfxCom.Messages.InterfaceControl;
 using RfxCom.Messages.InterfaceResponse;
 using Xunit;
+using System;
+using Microsoft.Reactive.Testing;
 
 namespace RfxCom.UnitTests
 {
     public class TransceiverTests
     {
-        private readonly TestCommunicationInterface _testCommunicationInterface;
+        private readonly TestCommunicationDevice _testCommunicationDevice;
         private readonly Transceiver _transceiver;
 
         public TransceiverTests()
         {
-            _testCommunicationInterface = new TestCommunicationInterface();
-            _transceiver = new Transceiver(new MessageCodec(), _testCommunicationInterface);
+            _testCommunicationDevice = new TestCommunicationDevice();
+            _transceiver = new Transceiver(new MessageCodec(), _testCommunicationDevice);
         }
 
         public static IEnumerable<object[]> SentMessages()
@@ -61,8 +64,8 @@ namespace RfxCom.UnitTests
         public async Task ShouldSendMessagesCorrectly(IMessage sentMessage, string packetString)
         {
             var expectedPacket = Packet.Parse(packetString).First();
-            await _transceiver.Send(sentMessage, CancellationToken.None);
-            var actualPacket = _testCommunicationInterface.Buffer.Last();
+            await _transceiver.SendAsync(sentMessage, CancellationToken.None);
+            var actualPacket = _testCommunicationDevice.Buffer.Last();
             actualPacket.ShouldBeEquivalentTo(expectedPacket);
         }
 
@@ -70,12 +73,12 @@ namespace RfxCom.UnitTests
         [MemberData(nameof(ReceivedMessages))]
         public async Task ShouldReceiveMessagesCorrectly(string byteString, IMessage expectedMessage)
         {
-            IMessage actualMessage = null;
 
             var packet = Packet.Parse(byteString);
-            _testCommunicationInterface.Buffer.Add(packet.First());
+            _testCommunicationDevice.Buffer.Add(packet.First());
 
-            await _transceiver.Receive(CancellationToken.None).ForEachAsync(message => actualMessage = message);
+            var messages = await _transceiver.ReceiveAsync(CancellationToken.None);
+            var actualMessage = messages.First();
 
             actualMessage.ShouldBeEquivalentTo(expectedMessage);
         }

@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using RfxCom.Messages;
 
 namespace RfxCom
 {
-    public interface ITransceiver : IDisposable
+    public interface IBufferedTransceiver : IDisposable
     {
+
+        IObservable<IMessage> Received { get; }
+
         Task SendAsync(IMessage message, CancellationToken cancellationToken);
 
-        Task<IEnumerable<IMessage>> ReceiveAsync(CancellationToken cancellationToken);
     }
 }

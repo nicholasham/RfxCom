@@ -15,14 +15,14 @@ namespace RfxCom.Messages.Chimes
 
         public Option<IMessage> Decode(Packet packet)
         {
-            if (packet.Length == PacketLengths.Chime)
+            if (packet.Length != PacketLengths.Chime)
                 return Option<IMessage>.None;
 
             var sequenceNumber = packet.SequenceNumber;
-            var id = BitConverter.ToUInt16(packet.Data, 1);
-            var signalStrengh = packet.Data[3];
+            var id = BitConverter.ToUInt16(packet.Data, 0);
+            var signalStrengh = packet.Data[2];
 
-            var sound = (ChimeSound) packet.Data[5];
+            var sound = (ChimeSound) packet.Data[3];
             return new ByronSxChimeMessage(sequenceNumber, id, sound, signalStrengh);
         }
 
