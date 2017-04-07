@@ -30,6 +30,12 @@ namespace RfxCom.UnitTests
             return Task.FromResult(copied);
         }
 
+        public Task FlushAsync(CancellationToken cancellationToken)
+        {
+            Buffer.Clear();
+            return Task.CompletedTask;
+        }
+
 
         public void Dispose()
         {

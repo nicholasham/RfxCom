@@ -13,5 +13,7 @@ namespace RfxCom
 
         Task<IEnumerable<Packet>> ReceiveAsync(CancellationToken cancellationToken);
 
+        Task FlushAsync(CancellationToken cancellationToken);
+
     }
 }

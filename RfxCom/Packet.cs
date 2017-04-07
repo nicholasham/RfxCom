@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using LanguageExt;
 using RfxCom.Messages;
+using RfxCom.Messages.InterfaceControl;
 
 namespace RfxCom
 {
@@ -53,7 +54,7 @@ namespace RfxCom
             return packet.ToBytes();
         }
 
-        private  byte[] ToBytes()
+        public  byte[] ToBytes()
         {
             return new[] {Length, (byte) Type, SubType, SequenceNumber}.Concat(Data).ToArray();
         }
@@ -64,5 +65,7 @@ namespace RfxCom
             var result = string.Join(" ", bytes.Select(x => $"{x:X2}"));
             return result;
         }
+
+      
     }
 }

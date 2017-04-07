@@ -10,6 +10,8 @@ namespace RfxCom
 
         IObservable<IMessage> Received { get; }
 
+        IObservable<IMessage> Sent { get; }
+
         Task SendAsync(IMessage message, CancellationToken cancellationToken);
 
     }

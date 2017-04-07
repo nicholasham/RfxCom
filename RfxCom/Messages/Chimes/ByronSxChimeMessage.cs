@@ -18,5 +18,10 @@ namespace RfxCom.Messages.Chimes
         public ChimeSound Sound { get; }
 
         public byte SignalStrength { get; }
+
+        public override string ToString()
+        {
+            return $"Byron SX - PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Id: {Id}, Sound: {Sound}, Signal Strength: {SignalStrength}";
+        }
     }
 }

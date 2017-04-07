@@ -10,8 +10,6 @@ using RJCP.IO.Ports;
 
 namespace RfxCom
 {
-   
-
     public class UsbDevice : ICommunicationDevice
     {
         private readonly SerialPortStream _stream;
@@ -24,12 +22,18 @@ namespace RfxCom
 
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)
         {
-            return _stream.WriteAsync(packet, 0, packet.Length + 1, cancellationToken);
+            var bytes = packet.ToBytes();
+            return _stream.WriteAsync(bytes, 0, bytes.Length, cancellationToken);
         }
 
         public async Task<IEnumerable<Packet>> ReceiveAsync(CancellationToken cancellationToken)
         {
             return  await ReadAsync(cancellationToken);
+        }
+
+        public Task FlushAsync(CancellationToken cancellationToken)
+        {
+            return _stream.FlushAsync(cancellationToken);
         }
 
         private async Task<Option<Packet>> ReadAsync(CancellationToken cancellationToken)
