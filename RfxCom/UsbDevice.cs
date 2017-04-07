@@ -17,7 +17,18 @@ namespace RfxCom
         public UsbDevice(string portName)
         {
             _stream = new SerialPortStream(portName, 38400, 8, Parity.None, StopBits.One);
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
             _stream.Open();
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+           _stream.Close();
+            return Task.CompletedTask;
         }
 
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)

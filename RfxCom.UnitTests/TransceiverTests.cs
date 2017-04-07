@@ -19,11 +19,14 @@ namespace RfxCom.UnitTests
     {
         private readonly TestCommunicationDevice _testCommunicationDevice;
         private readonly Transceiver _transceiver;
+        private TestScheduler _scheduler;
 
         public TransceiverTests()
         {
             _testCommunicationDevice = new TestCommunicationDevice();
-            _transceiver = new Transceiver(new MessageCodec(), _testCommunicationDevice);
+            _scheduler = new TestScheduler();
+            _transceiver = new Transceiver(_testCommunicationDevice, new MessageCodec(), _scheduler);
+            
         }
 
         public static IEnumerable<object[]> SentMessages()
@@ -73,12 +76,22 @@ namespace RfxCom.UnitTests
         [MemberData(nameof(ReceivedMessages))]
         public async Task ShouldReceiveMessagesCorrectly(string byteString, IMessage expectedMessage)
         {
+            await _transceiver.StartAsync(CancellationToken.None);
+
+            _scheduler.Start();
+            _scheduler.AdvanceBy(1);
 
             var packet = Packet.Parse(byteString);
             _testCommunicationDevice.Buffer.Add(packet.First());
 
-            var messages = await _transceiver.ReceiveAsync(CancellationToken.None);
-            var actualMessage = messages.First();
+            IMessage  actualMessage = null;
+
+            _scheduler.AdvanceBy(10);
+
+            _transceiver.Received.Subscribe(message =>
+            {
+                actualMessage = message;
+            });
 
             actualMessage.ShouldBeEquivalentTo(expectedMessage);
         }

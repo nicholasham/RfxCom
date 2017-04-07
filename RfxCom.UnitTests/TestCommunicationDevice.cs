@@ -15,8 +15,19 @@ namespace RfxCom.UnitTests
         }
 
         public List<Packet> Buffer { get; }
-        
-    
+
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+
+        }
+
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)
         {
             Buffer.Add(packet);

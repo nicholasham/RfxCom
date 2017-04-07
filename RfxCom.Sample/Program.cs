@@ -8,13 +8,21 @@ namespace RfxCom.Sample
 {
     internal class Program
     {
-        private static async Task MainAsync()
+        private static async Task MainAsync(CancellationToken cancellationToken)
         {
-            using (var transceiver = new ReactiveTransceiver(new MessageCodec(), new UsbDevice("COM3")))
+            using (var transceiver = new Transceiver(new UsbDevice("COM3"), new MessageCodec()))
             {
                 transceiver.Received.Subscribe(message => Console.WriteLine($"[Received]-{message}"));
                 transceiver.Sent.Subscribe(message => Console.WriteLine($"[Sent]-{message}"));
+
+                await transceiver.StartAsync(cancellationToken);
+
+                await transceiver.SendAsync(new SetModeMessage(1, TransceiverType.RfxTrx43392, Protocol.ByronSx),
+                    CancellationToken.None);
+
                 Console.ReadLine();
+
+                await transceiver.StopAsync(cancellationToken);
             }
         }
 
@@ -22,7 +30,7 @@ namespace RfxCom.Sample
         {
             try
             {
-                Task.WaitAll(MainAsync());
+                Task.WaitAll(MainAsync(CancellationToken.None));
                 Console.ReadLine();
             }
             catch (Exception e)

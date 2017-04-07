@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 namespace RfxCom
 {
 
-    public interface ICommunicationDevice : IDisposable
+    public interface ICommunicationDevice
     {
+
+        Task StartAsync(CancellationToken cancellationToken);
+
+        Task StopAsync(CancellationToken cancellationToken);
 
         Task SendAsync(Packet packet, CancellationToken cancellationToken);
 
