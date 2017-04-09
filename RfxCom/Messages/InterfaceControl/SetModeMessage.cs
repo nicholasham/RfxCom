@@ -12,5 +12,10 @@
 
         public Protocol[] Protocols { get; }
 
+        public override string ToString()
+        {
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Command: Set Mode, Protocols: {string.Join(",",Protocols)}";
+        }
+
     }
 }

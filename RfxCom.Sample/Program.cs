@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using RfxCom.Messages;
+using RfxCom.Messages.Chimes;
 using RfxCom.Messages.InterfaceControl;
 
 namespace RfxCom.Sample
@@ -19,6 +20,8 @@ namespace RfxCom.Sample
 
                 await transceiver.SendAsync(new SetModeMessage(1, TransceiverType.RfxTrx43392, Protocol.ByronSx),
                     CancellationToken.None);
+
+                await transceiver.SendAsync(new ByronSxChimeMessage(1, 1, ChimeSound.BigBen), cancellationToken);
 
                 Console.ReadLine();
 

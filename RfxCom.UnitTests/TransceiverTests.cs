@@ -78,8 +78,11 @@ namespace RfxCom.UnitTests
         {
             await _transceiver.StartAsync(CancellationToken.None);
 
+            
+            _scheduler.Schedule(TimeSpan.FromSeconds(10), () => {});
+
             _scheduler.Start();
-            _scheduler.AdvanceBy(1);
+
 
             var packet = Packet.Parse(byteString);
             _testCommunicationDevice.Buffer.Add(packet.First());
@@ -92,6 +95,7 @@ namespace RfxCom.UnitTests
             {
                 actualMessage = message;
             });
+
 
             actualMessage.ShouldBeEquivalentTo(expectedMessage);
         }

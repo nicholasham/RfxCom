@@ -1,8 +1,8 @@
 namespace RfxCom.Messages.InterfaceResponse
 {
-    public class InterfaceResponseMessage : IMessage
+    public abstract class InterfaceResponseMessage : IMessage
     {
-        public InterfaceResponseMessage(byte sequenceNumber)
+        protected InterfaceResponseMessage(byte sequenceNumber)
         {
             SequenceNumber = sequenceNumber;
         }

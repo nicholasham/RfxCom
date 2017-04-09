@@ -20,5 +20,10 @@ namespace RfxCom.Messages.InterfaceResponse
         public byte Id3 { get; }
 
         public byte UnitNumber { get; }
+
+        public override string ToString()
+        {
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response: List Rfy Remotes";
+        }
     }
 }

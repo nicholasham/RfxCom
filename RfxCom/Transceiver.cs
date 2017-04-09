@@ -78,19 +78,24 @@ namespace RfxCom
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _device.StopAsync(cancellationToken);
             _receiveSubscription.Dispose();
+            await _device.StopAsync(cancellationToken);
         }
         private IMessage Decode(Packet packet)
         {
             return _codec
                 .Decode(packet)
-                .Match(message => message, () => new RawMessage(packet));
+                .Match(message => message, () => CreateRawMessage(packet));
+        }
+
+        private static RawMessage CreateRawMessage(Packet packet)
+        {
+            return new RawMessage(packet);
         }
 
         public void Dispose()
         {
-           Task.WaitAll(StopAsync(CancellationToken.None));
+            this.StopAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

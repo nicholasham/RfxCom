@@ -16,7 +16,7 @@ namespace RfxCom.Messages.InterfaceResponse
 
         public override string ToString()
         {
-            return $"SetModeResponseMessage-  Sequence: {SequenceNumber}, TransceiverType: {TransceiverType},Protocols: {string.Join(",", Protocols)}";
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response: Set Mode, TransceiverType: {TransceiverType}, Protocols: {string.Join(",", Protocols)}";
         }
     }
 }

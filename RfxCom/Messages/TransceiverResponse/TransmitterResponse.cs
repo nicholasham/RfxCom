@@ -1,6 +1,6 @@
-namespace RfxCom.Messages.Transceiver
+namespace RfxCom.Messages.TransceiverResponse
 {
-    public enum TransceiverResponse : byte
+    public enum TransmitterResponse : byte
     {
         Ok = 0x00,
         OkButDelay = 0x01,

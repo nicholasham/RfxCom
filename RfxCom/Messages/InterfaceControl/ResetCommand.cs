@@ -5,5 +5,10 @@ namespace RfxCom.Messages.InterfaceControl
         public ResetMessage() : base(0)
         {
         }
+
+        public override string ToString()
+        {
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Command: Reset";
+        }
     }
 }

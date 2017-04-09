@@ -10,7 +10,16 @@ namespace RfxCom.Messages.Chimes
             SequenceNumber = sequenceNumber;
             Id = id;
         }
-        
+
+        public ByronSxChimeMessage(byte sequenceNumber, ushort id, ChimeSound sound)
+        {
+            PacketType = PacketType.Chime;
+            Sound = sound;
+            SignalStrength = 0x00;
+            SequenceNumber = sequenceNumber;
+            Id = id;
+        }
+
         public byte SequenceNumber { get; }
         public ushort Id { get; }
         public PacketType PacketType { get; }
@@ -21,7 +30,7 @@ namespace RfxCom.Messages.Chimes
 
         public override string ToString()
         {
-            return $"Byron SX - PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Id: {Id}, Sound: {Sound}, Signal Strength: {SignalStrength}";
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Chime Type: Byron SX, Id: {Id}, Sound: {Sound}, Signal Strength: {SignalStrength}";
         }
     }
 }

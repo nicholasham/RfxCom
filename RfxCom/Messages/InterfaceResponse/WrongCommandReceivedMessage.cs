@@ -5,5 +5,10 @@ namespace RfxCom.Messages.InterfaceResponse
         public WrongCommandReceivedMessage(byte sequenceNumber) : base(sequenceNumber)
         {
         }
+
+        public override string ToString()
+        {
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response: Wrong command received";
+        }
     }
 }

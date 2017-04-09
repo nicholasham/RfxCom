@@ -20,9 +20,8 @@ namespace RfxCom.Messages.Chimes
 
             var sequenceNumber = packet.SequenceNumber;
             var id = BitConverter.ToUInt16(packet.Data, 0);
-            var signalStrengh = packet.Data[2];
-
-            var sound = (ChimeSound) packet.Data[3];
+            var sound = (ChimeSound)packet.Data[2];
+            var signalStrengh = packet.Data[3];
             return new ByronSxChimeMessage(sequenceNumber, id, sound, signalStrengh);
         }
 

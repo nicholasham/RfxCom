@@ -1,8 +1,8 @@
 namespace RfxCom.Messages.InterfaceControl
 {
-    public class InterfaceControlMessage : IMessage
+    public abstract class InterfaceControlMessage : IMessage
     {
-        public InterfaceControlMessage(byte sequenceNumber)
+        protected InterfaceControlMessage(byte sequenceNumber)
         {
             SequenceNumber = sequenceNumber;
         }

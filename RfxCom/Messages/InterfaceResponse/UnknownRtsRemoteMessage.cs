@@ -5,5 +5,10 @@ namespace RfxCom.Messages.InterfaceResponse
         public UnknownRtsRemoteMessage(byte sequenceNumber) : base(sequenceNumber)
         {
         }
+
+        public override string ToString()
+        {
+            return $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response: Unknown Rts Remote";
+        }
     }
 }

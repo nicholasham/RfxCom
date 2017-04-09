@@ -1,33 +1,23 @@
+using System.Linq;
+
 namespace RfxCom.Messages
 {
     public class RawMessage : IMessage
     {
         public RawMessage(Packet packet)
         {
-            PacketType = packet.Type;
-            SubType = packet.SubType;
-            SequenceNumber = packet.SequenceNumber;
-            Data = packet.Data;
+            Packet = packet;
         }
-        public RawMessage(PacketType packetType, byte subType, byte sequenceNumber, byte[] data)
-        {
-            PacketType = packetType;
-            SubType = subType;
-            SequenceNumber = sequenceNumber;
-            Data = data;
-        }
-
-        public PacketType PacketType { get; }
-
-        public byte SubType { get; }
-
-        public byte SequenceNumber { get; }
-
-        public byte[] Data { get; }
+        public Packet Packet { get; }
 
         public override string ToString()
         {
-            return base.ToString();
+            var data = string.Join(" ", Packet.Data.Select(x => $"{x:X2}"));
+            return $"Raw - PacketType: {Packet.Type},Sub Type:{Packet.SubType}, Sequence Number: {Packet.SequenceNumber}, Data: {data}";
+
         }
+
+        public PacketType PacketType => Packet.Type;
+        public byte SequenceNumber => Packet.SequenceNumber;
     }
 }
