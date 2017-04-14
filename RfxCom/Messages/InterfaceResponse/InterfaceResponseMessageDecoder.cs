@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using LanguageExt;
 using RfxCom.Messages.InterfaceControl;
 
 namespace RfxCom.Messages.InterfaceResponse
 {
-    public class InterfaceResponseMessageEncoder : IMessageDecoder
+    public class InterfaceResponseMessageDecoder : IMessageDecoder
     {
         protected const byte NotUsed = 0x00;
 
@@ -15,7 +16,7 @@ namespace RfxCom.Messages.InterfaceResponse
 
         public Option<IMessage> Decode(Packet packet)
         {
-            var subType = (InterfaceResponseSubType) packet.SubType;
+            InterfaceResponseSubType subType = (InterfaceResponseSubType)packet.SubType;
 
             switch (subType)
             {

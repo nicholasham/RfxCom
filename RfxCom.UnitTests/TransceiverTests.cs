@@ -19,13 +19,11 @@ namespace RfxCom.UnitTests
     {
         private readonly TestCommunicationDevice _testCommunicationDevice;
         private readonly Transceiver _transceiver;
-        private TestScheduler _scheduler;
 
         public TransceiverTests()
         {
             _testCommunicationDevice = new TestCommunicationDevice();
-            _scheduler = new TestScheduler();
-            _transceiver = new Transceiver(_testCommunicationDevice, new MessageCodec(), _scheduler);
+            _transceiver = new Transceiver(_testCommunicationDevice, new MessageCodec());
             
         }
 
@@ -68,7 +66,7 @@ namespace RfxCom.UnitTests
         {
             var expectedPacket = Packet.Parse(packetString).First();
             await _transceiver.SendAsync(sentMessage, CancellationToken.None);
-            var actualPacket = _testCommunicationDevice.Buffer.Last();
+            var actualPacket = _testCommunicationDevice.Sent.Last();
             actualPacket.ShouldBeEquivalentTo(expectedPacket);
         }
 
@@ -78,24 +76,21 @@ namespace RfxCom.UnitTests
         {
             await _transceiver.StartAsync(CancellationToken.None);
 
-            
-            _scheduler.Schedule(TimeSpan.FromSeconds(10), () => {});
+            var resetEvent = new ManualResetEvent(false);
 
-            _scheduler.Start();
-
-
-            var packet = Packet.Parse(byteString);
-            _testCommunicationDevice.Buffer.Add(packet.First());
+            _testCommunicationDevice.Received.AddRange(Packet.Parse(byteString));
 
             IMessage  actualMessage = null;
-
-            _scheduler.AdvanceBy(10);
 
             _transceiver.Received.Subscribe(message =>
             {
                 actualMessage = message;
+                resetEvent.Set();
             });
 
+            resetEvent.WaitOne();
+
+            await _transceiver.StopAsync(CancellationToken.None);
 
             actualMessage.ShouldBeEquivalentTo(expectedMessage);
         }

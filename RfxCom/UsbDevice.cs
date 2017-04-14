@@ -19,16 +19,16 @@ namespace RfxCom
             _stream = new SerialPortStream(portName, 38400, 8, Parity.None, StopBits.One);
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public Task OpenAsync(CancellationToken cancellationToken)
         {
             _stream.Open();
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task CloseAsync(CancellationToken cancellationToken)
         {
-           _stream.Close();
-            return Task.CompletedTask;
+            await _stream.FlushAsync(cancellationToken);
+            _stream.Close();
         }
 
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)
@@ -65,17 +65,15 @@ namespace RfxCom
             var totalBytesRemaining = length;
             var totalBytesRead = 0;
 
-            while (totalBytesRemaining != 0 && !cancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested && totalBytesRemaining != 0 )
             {
                 var bytesRead = await _stream.ReadAsync(buffer, totalBytesRead, totalBytesRemaining, cancellationToken);
-                cancellationToken.ThrowIfCancellationRequested();
                 totalBytesRead += bytesRead;
                 totalBytesRemaining -= bytesRead;
             }
 
             return buffer;
         }
-
 
         public void Dispose()
         {

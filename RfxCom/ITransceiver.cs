@@ -5,7 +5,7 @@ using RfxCom.Messages;
 
 namespace RfxCom
 {
-    public interface ITransceiver : IDisposable
+    public interface ITransceiver
     {
 
         IObservable<IMessage> Received { get; }

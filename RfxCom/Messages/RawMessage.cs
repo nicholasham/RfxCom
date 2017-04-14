@@ -13,7 +13,7 @@ namespace RfxCom.Messages
         public override string ToString()
         {
             var data = string.Join(" ", Packet.Data.Select(x => $"{x:X2}"));
-            return $"Raw - PacketType: {Packet.Type},Sub Type:{Packet.SubType}, Sequence Number: {Packet.SequenceNumber}, Data: {data}";
+            return $"Raw(PacketType: {Packet.Type},Sub Type:{Packet.SubType}, Sequence Number: {Packet.SequenceNumber}, Data: {data})";
 
         }
 

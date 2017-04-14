@@ -8,10 +8,9 @@ namespace RfxCom
 
     public interface ICommunicationDevice
     {
+        Task OpenAsync(CancellationToken cancellationToken);
 
-        Task StartAsync(CancellationToken cancellationToken);
-
-        Task StopAsync(CancellationToken cancellationToken);
+        Task CloseAsync(CancellationToken cancellationToken);
 
         Task SendAsync(Packet packet, CancellationToken cancellationToken);
 

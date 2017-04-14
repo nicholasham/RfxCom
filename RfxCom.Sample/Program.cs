@@ -11,29 +11,28 @@ namespace RfxCom.Sample
     {
         private static async Task MainAsync(CancellationToken cancellationToken)
         {
-            using (var transceiver = new Transceiver(new UsbDevice("COM3"), new MessageCodec()))
-            {
-                transceiver.Received.Subscribe(message => Console.WriteLine($"[Received]-{message}"));
-                transceiver.Sent.Subscribe(message => Console.WriteLine($"[Sent]-{message}"));
+            var transceiver = new Transceiver(new UsbDevice("COM3"), new MessageCodec());
 
-                await transceiver.StartAsync(cancellationToken);
+            transceiver.Received.Subscribe(message => Console.WriteLine($"[Received]-{message}"));
+            transceiver.Sent.Subscribe(message => Console.WriteLine($"[Sent]-{message}"));
 
-                await transceiver.SendAsync(new SetModeMessage(1, TransceiverType.RfxTrx43392, Protocol.ByronSx),
-                    CancellationToken.None);
+            await transceiver.StartAsync(cancellationToken);
 
-                await transceiver.SendAsync(new ByronSxChimeMessage(1, 1, ChimeSound.BigBen), cancellationToken);
+            await transceiver.SendAsync(new SetModeMessage(1, TransceiverType.RfxTrx43392, Protocol.ByronSx),
+                CancellationToken.None);
 
-                Console.ReadLine();
+            await transceiver.SendAsync(new ByronSxChimeMessage(1, 1, ChimeSound.BigBen), cancellationToken);
 
-                await transceiver.StopAsync(cancellationToken);
-            }
+            Console.ReadLine();
+
+            await transceiver.StopAsync(cancellationToken);
         }
 
         private static void Main(string[] args)
         {
             try
             {
-                Task.WaitAll(MainAsync(CancellationToken.None));
+                MainAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
                 Console.ReadLine();
             }
             catch (Exception e)

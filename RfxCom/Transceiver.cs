@@ -18,12 +18,14 @@ namespace RfxCom
         private readonly IMessageCodec _codec;
         private readonly ICommunicationDevice _device;
         private readonly BlockingCollection<IMessage> _receivedMessages;
-        private IDisposable _receiveSubscription;
         private readonly BlockingCollection<IMessage> _sentMessages;
+        private IDisposable _receiveSubscription;
 
-        public Transceiver(ICommunicationDevice device, IMessageCodec codec) : this(device, codec, TaskPoolScheduler.Default)
+        public Transceiver(ICommunicationDevice device, IMessageCodec codec) : this(device, codec,
+            TaskPoolScheduler.Default)
         {
         }
+
         public Transceiver(ICommunicationDevice device, IMessageCodec codec, IScheduler scheduler)
         {
             _codec = codec;
@@ -37,16 +39,10 @@ namespace RfxCom
 
             Sent = _sentMessages.GetConsumingEnumerable()
                 .ToObservable(scheduler);
-            
         }
 
         public IObservable<IMessage> Received { get; }
         public IObservable<IMessage> Sent { get; }
-      
-        private async Task<IEnumerable<IMessage>> ReceiveAsync(CancellationToken cancellationToken)
-        {
-            return (await _device.ReceiveAsync(cancellationToken)).Select(Decode);
-        }
 
         public async Task SendAsync(IMessage message, CancellationToken cancellationToken)
         {
@@ -61,7 +57,7 @@ namespace RfxCom
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _device.StartAsync(cancellationToken);
+            await _device.OpenAsync(cancellationToken);
             await SendAsync(new ResetMessage(), cancellationToken);
             await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
             await _device.FlushAsync(cancellationToken);
@@ -72,30 +68,26 @@ namespace RfxCom
                 .Repeat()
                 .TakeWhile(x => x.Any())
                 .SelectMany(x => x)
-                .SubscribeOn(new EventLoopScheduler())
+                .SubscribeOn(TaskPoolScheduler.Default)
                 .Subscribe(message => { _receivedMessages.Add(message, cancellationToken); });
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            await _device.CloseAsync(cancellationToken);
             _receiveSubscription.Dispose();
-            await _device.StopAsync(cancellationToken);
         }
+
+        private async Task<IEnumerable<IMessage>> ReceiveAsync(CancellationToken cancellationToken)
+        {
+            return (await _device.ReceiveAsync(cancellationToken)).Select(Decode);
+        }
+
         private IMessage Decode(Packet packet)
         {
             return _codec
                 .Decode(packet)
-                .Match(message => message, () => CreateRawMessage(packet));
-        }
-
-        private static RawMessage CreateRawMessage(Packet packet)
-        {
-            return new RawMessage(packet);
-        }
-
-        public void Dispose()
-        {
-            this.StopAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                .Match(message => message, () => new RawMessage(packet));
         }
     }
 }

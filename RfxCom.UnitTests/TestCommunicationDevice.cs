@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,39 +9,41 @@ namespace RfxCom.UnitTests
     {
         public TestCommunicationDevice()
         {
-            Buffer = new List<Packet>();
+            Sent = new List<Packet>();
+            Received = new List<Packet>();
         }
 
-        public List<Packet> Buffer { get; }
+        public List<Packet> Sent { get; }
+        public List<Packet> Received { get; }
 
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public Task OpenAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public Task CloseAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
-
         }
 
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)
         {
-            Buffer.Add(packet);
+            Sent.Add(packet);
             return Task.CompletedTask;
         }
 
         public Task<IEnumerable<Packet>> ReceiveAsync(CancellationToken cancellationToken)
         {
-            var copied = Buffer.ToList().AsEnumerable();
-            Buffer.Clear();
+            var copied = Received.ToList().AsEnumerable();
+            Received.Clear();
             return Task.FromResult(copied);
         }
 
         public Task FlushAsync(CancellationToken cancellationToken)
         {
-            Buffer.Clear();
+            Sent.Clear();
+            Received.Clear();
             return Task.CompletedTask;
         }
 
