@@ -22,15 +22,9 @@ namespace RfxCom.Messages.TransceiverResponse
 
         public override string ToString()
         {
-            if (SubType == TransceiverResponseSubType.Error)
-            {
-                return $"Receiver Error - PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Message: receiver did not lock Id";
-            }
-            else
-            {
-                return $"Transmitter Response - PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response: {TransmitterResponse.First()}";
-            }
-            
+            return SubType == TransceiverResponseSubType.Error 
+                ? $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response Type: Error, Message: receiver did not lock Id" 
+                : $"PacketType: {PacketType}, Sequence Number: {SequenceNumber}, Response Type: Transmitter, Response: {TransmitterResponse.First()}";
         }
     }
 }

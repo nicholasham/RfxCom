@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
+    <Version>1.0.0-alpha</Version>
+    <Authors>Nicholas Hammond</Authors>
+    <Description>.Net client for talking to an RFXtrx433 device</Description>
+    <Copyright>Copyright (C) 2016 Nicholas Hammond</Copyright>
+    <PackageLicenseUrl>https://github.com/nicholasham/RfxCom/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nicholasham/RfxCom</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nicholasham/RfxCom</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

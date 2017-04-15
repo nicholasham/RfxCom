@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt;
@@ -34,12 +31,13 @@ namespace RfxCom
         public Task SendAsync(Packet packet, CancellationToken cancellationToken)
         {
             var bytes = packet.ToBytes();
-            return _stream.WriteAsync(bytes, 0, bytes.Length, cancellationToken);
+            _stream.Write(bytes, 0, bytes.Length);
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Packet>> ReceiveAsync(CancellationToken cancellationToken)
         {
-            return  await ReadAsync(cancellationToken);
+            return await ReadAsync(cancellationToken);
         }
 
         public Task FlushAsync(CancellationToken cancellationToken)
@@ -65,7 +63,7 @@ namespace RfxCom
             var totalBytesRemaining = length;
             var totalBytesRead = 0;
 
-            while (!cancellationToken.IsCancellationRequested && totalBytesRemaining != 0 )
+            while (!cancellationToken.IsCancellationRequested && totalBytesRemaining != 0)
             {
                 var bytesRead = await _stream.ReadAsync(buffer, totalBytesRead, totalBytesRemaining, cancellationToken);
                 totalBytesRead += bytesRead;

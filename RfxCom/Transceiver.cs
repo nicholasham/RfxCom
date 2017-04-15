@@ -20,9 +20,9 @@ namespace RfxCom
         private readonly BlockingCollection<IMessage> _receivedMessages;
         private readonly BlockingCollection<IMessage> _sentMessages;
         private IDisposable _receiveSubscription;
+        private readonly IScheduler _scheduler;
 
-        public Transceiver(ICommunicationDevice device, IMessageCodec codec) : this(device, codec,
-            TaskPoolScheduler.Default)
+        public Transceiver(ICommunicationDevice device, IMessageCodec codec) : this(device, codec,TaskPoolScheduler.Default)
         {
         }
 
@@ -30,15 +30,15 @@ namespace RfxCom
         {
             _codec = codec;
             _device = device;
-
+            _scheduler = scheduler;
             _receivedMessages = new BlockingCollection<IMessage>();
             _sentMessages = new BlockingCollection<IMessage>();
 
             Received = _receivedMessages.GetConsumingEnumerable()
-                .ToObservable(scheduler);
+                .ToObservable(_scheduler);
 
             Sent = _sentMessages.GetConsumingEnumerable()
-                .ToObservable(scheduler);
+                .ToObservable(_scheduler);
         }
 
         public IObservable<IMessage> Received { get; }
@@ -68,7 +68,7 @@ namespace RfxCom
                 .Repeat()
                 .TakeWhile(x => x.Any())
                 .SelectMany(x => x)
-                .SubscribeOn(TaskPoolScheduler.Default)
+                .SubscribeOn(_scheduler)
                 .Subscribe(message => { _receivedMessages.Add(message, cancellationToken); });
         }
 

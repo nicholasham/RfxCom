@@ -1,4 +1,7 @@
-﻿namespace RfxCom.Messages
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace RfxCom.Messages
 {
     public interface IMessage
     {
@@ -6,4 +9,5 @@
         byte SequenceNumber { get; }
 
     }
+    
 }

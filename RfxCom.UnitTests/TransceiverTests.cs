@@ -88,7 +88,7 @@ namespace RfxCom.UnitTests
                 resetEvent.Set();
             });
 
-            resetEvent.WaitOne();
+            resetEvent.WaitOne(TimeSpan.FromSeconds(60));
 
             await _transceiver.StopAsync(CancellationToken.None);
 
